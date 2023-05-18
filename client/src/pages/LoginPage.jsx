@@ -4,9 +4,7 @@ import Header from "../components/Header";
 export default function LoginPage() {
   return (
     <div>
-      <Header />
-      <h1>Login</h1>
-      <Footer />
+      This is the Login Page
     </div>
   );
 }
