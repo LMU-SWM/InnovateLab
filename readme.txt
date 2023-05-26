@@ -1,2 +1,1 @@
-IOnnovation lab project
-bla bla bla
+Innovation lab project
