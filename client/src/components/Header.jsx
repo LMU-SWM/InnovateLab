@@ -1,10 +1,7 @@
-import LogoutButton from './LogoutButton';
-
 export default function Header() {
   return (
-    <div>Header</div>
-    /*<main className="column">
-      <LogoutButton/>
-    </main>*/
+    <div class="bg-grey-100">
+      <h1>Header Component</h1>
+    </div>
   );
 }
