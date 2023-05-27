@@ -24,31 +24,62 @@ export default function CheckboxList() {
         setChecked(newChecked);
     };
 
+    const getBookingList = (skip, take) => {
+        return [
+            {
+                Id: '1',
+                BookingName: 'Meeting 1',
+                DateTime: 'May 27, 2023 9:00 AM',
+                Location: 'Conference Room A',
+            },
+            {
+                Id: '2',
+                BookingName: 'Meeting 2',
+                DateTime: 'May 27, 2023 2:00 PM',
+                Location: 'Conference Room B',
+            },
+            {
+                Id: '3',
+                BookingName: 'Meeting 3',
+                DateTime: 'May 28, 2023 10:30 AM',
+                Location: 'Conference Room C',
+            },
+            // Add more objects as needed
+        ].slice(skip, skip + take)
+    };
+
+
     return (
         <div style={{ width: '66.66vw' }}>
             <List sx={{ width: '100%', maxWidth: '100%', bgcolor: 'background.paper' }}>
-                {[0, 1, 2, 3].map((value) => {
-                    const labelId = `checkbox-list-label-${value}`;
+                <ListItem disablePadding>
+                    <ListItemText
+                        primary={
+                            <div style={{ display: 'flex', alignItems: 'center', fontWeight: 'bold' }}>
+                                <span style={{ marginRight: '64px' }}>Booking name</span>
+                                <span style={{ marginRight: '64px' }}>Date &amp; Time</span>
+                                <span>Location</span>
+                            </div>
+                        }
+                    />
+                </ListItem>
+
+
+                {getBookingList().map((value) => {
+                    const labelId = `checkbox-list-label-${value.Id}`;
 
                     // Additional information for each line item
-                    const dateTime = "May 23, 2023 10:00 AM";
-                    const location = "Example Location";
 
                     return (
                         <ListItem
                             key={value}
-                            secondaryAction={
-                                <IconButton edge="end" aria-label="comments">
-                                    <CommentIcon />
-                                </IconButton>
-                            }
                             disablePadding
                         >
-                            <ListItemButton role={undefined} onClick={handleToggle(value)} dense>
+                            <ListItemButton role={undefined} onClick={handleToggle(value.Id)} dense>
                                 <ListItemIcon>
                                     <Checkbox
                                         edge="start"
-                                        checked={checked.indexOf(value) !== -1}
+                                        checked={checked.indexOf(value.Id) !== -1}
                                         tabIndex={-1}
                                         disableRipple
                                         inputProps={{ 'aria-labelledby': labelId }}
@@ -58,9 +89,9 @@ export default function CheckboxList() {
                                     id={labelId}
                                     primary={
                                         <div style={{ display: 'flex', alignItems: 'center' }}>
-                                            <span style={{ marginRight: '64px' }}>{`Line item ${value + 1}`}</span>
-                                            <span style={{ marginRight: '64px' }}>{dateTime}</span>
-                                            <span>{location}</span>
+                                            <span style={{ marginRight: '64px' }}>{value.BookingName}</span>
+                                            <span style={{ marginRight: '64px' }}>{value.DateTime}</span>
+                                            <span>{value.Location}</span>
                                         </div>
                                     }
                                 />
