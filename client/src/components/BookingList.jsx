@@ -1,12 +1,5 @@
 import React from 'react';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import Checkbox from '@mui/material/Checkbox';
-import IconButton from '@mui/material/IconButton';
-import CommentIcon from '@mui/icons-material/Comment';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Checkbox } from '@mui/material';
 
 export default function CheckboxList() {
     const [checked, setChecked] = React.useState([0]);
@@ -51,55 +44,42 @@ export default function CheckboxList() {
 
     return (
         <div style={{ width: '66.66vw' }}>
-            <List sx={{ width: '100%', maxWidth: '100%', bgcolor: 'background.paper' }}>
-                <ListItem disablePadding>
-                    <ListItemText
-                        primary={
-                            <div style={{ display: 'flex', alignItems: 'center', fontWeight: 'bold' }}>
-                                <span style={{ marginRight: '64px' }}>Booking name</span>
-                                <span style={{ marginRight: '64px' }}>Date &amp; Time</span>
-                                <span>Location</span>
-                            </div>
-                        }
-                    />
-                </ListItem>
+            <TableContainer style={{ width: '100%', maxWidth: '100%', backgroundColor: 'background.paper', marginLeft: '20px' }}>
+                <Table>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell style={{ fontWeight: 'bold' }}></TableCell>
+                            <TableCell style={{ fontWeight: 'bold' }}>Booking name</TableCell>
+                            <TableCell style={{ fontWeight: 'bold' }}>Location</TableCell>
+                            <TableCell style={{ fontWeight: 'bold' }}>Date &amp; Time</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {getBookingList(0, 5).map((value) => {
+                            const labelId = `checkbox-list-label-${value.Id}`;
 
-
-                {getBookingList().map((value) => {
-                    const labelId = `checkbox-list-label-${value.Id}`;
-
-                    // Additional information for each line item
-
-                    return (
-                        <ListItem
-                            key={value}
-                            disablePadding
-                        >
-                            <ListItemButton role={undefined} onClick={handleToggle(value.Id)} dense>
-                                <ListItemIcon>
-                                    <Checkbox
-                                        edge="start"
-                                        checked={checked.indexOf(value.Id) !== -1}
-                                        tabIndex={-1}
-                                        disableRipple
-                                        inputProps={{ 'aria-labelledby': labelId }}
-                                    />
-                                </ListItemIcon>
-                                <ListItemText
-                                    id={labelId}
-                                    primary={
-                                        <div style={{ display: 'flex', alignItems: 'center' }}>
-                                            <span style={{ marginRight: '64px' }}>{value.BookingName}</span>
-                                            <span style={{ marginRight: '64px' }}>{value.DateTime}</span>
-                                            <span>{value.Location}</span>
-                                        </div>
-                                    }
-                                />
-                            </ListItemButton>
-                        </ListItem>
-                    );
-                })}
-            </List>
+                            return (
+                                <TableRow key={value.Id} role="checkbox">
+                                    <TableCell padding="checkbox">
+                                        <Checkbox
+                                            edge="start"
+                                            onClick={(event) => event.stopPropagation()} // Prevents row click event
+                                            onChange={handleToggle(value.Id)}
+                                            checked={checked.indexOf(value.Id) !== -1}
+                                            tabIndex={-1}
+                                            disableRipple
+                                            inputProps={{ 'aria-labelledby': labelId }}
+                                        />
+                                    </TableCell>
+                                    <TableCell id={labelId}>{value.BookingName}</TableCell>
+                                    <TableCell>{value.Location}</TableCell>
+                                    <TableCell>{value.DateTime}</TableCell>
+                                </TableRow>
+                            );
+                        })}
+                    </TableBody>
+                </Table>
+            </TableContainer>
         </div>
     );
-}
+    }
