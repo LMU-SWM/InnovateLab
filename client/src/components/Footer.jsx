@@ -1,7 +1,14 @@
+import React from 'react';
+
+//this is the footer component with the applications name 
 export default function Footer() {
   return (
-    <div>
-      <h1>Footer Component</h1>
-    </div>
+    <footer className="py-4 px-6 bg-white shadow">
+      <div className="container mx-auto">
+        <p className="text-center text-gray-700">
+          Innovation Lab Booking Tool for Messe München
+        </p>
+      </div>
+    </footer>
   );
 }

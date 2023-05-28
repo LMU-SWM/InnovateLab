@@ -1,4 +1,4 @@
-import LoginButton from "../components/LoginButton";
+//import LoginButton from "../components/LoginButton";
 
 export default function LoginPage() {
   return (
@@ -7,6 +7,6 @@ export default function LoginPage() {
       <h1>Auth0 Login</h1>
       <LoginButton/>
       </main>
-      </div>
+    </div>
   );
 }

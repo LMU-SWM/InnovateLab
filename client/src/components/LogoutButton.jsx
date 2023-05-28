@@ -1,6 +1,7 @@
-/*import { useAuth0 } from "@auth0/auth0-react";
+import { useAuth0 } from "@auth0/auth0-react";
 import React from 'react'
 
+//logout button only works if you are authenticated
 const LogoutButton = () => {
     const { logout, isAuthenticated } = useAuth0;
     return (
@@ -10,4 +11,4 @@ const LogoutButton = () => {
     )
 }
 
-export default LogoutButton*/
+export default LogoutButton
