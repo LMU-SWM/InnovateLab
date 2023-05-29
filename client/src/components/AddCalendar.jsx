@@ -1,21 +1,36 @@
-import React from 'react';
-import Fullcalendar from "@fullcalendar/react";
-import dayGridPlugin from "@fullcalendar/daygrid";
-import timeGridPlugin from "@fullcalendar/timegrid";
+import { useState } from 'react';
+import FullCalendar from '@fullcalendar/react';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from "@fullcalendar/interaction";
+import googleCalendarPlugin from '@fullcalendar/google-calendar';
 
 export default function AddCalendar() {
+  const [events, setEvents] = useState([]);
+
+  const handleDateClick = (info) => {
+    let newEvents = [...events, 
+      { 
+        title: 'New Event',
+        start: info.dateStr
+      }
+    ];
+    setEvents(newEvents);
+  };
+
   return (
     <div className="calendar">
-      <Fullcalendar
-        plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-        initialView={"dayGridMonth"}
+      <FullCalendar
+        plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, googleCalendarPlugin]}
+        initialView="dayGridMonth"
         headerToolbar={{
-          start: "today prev,next", // will normally be on the left. if RTL, will be on the right
-          center: "title",
-          end: "dayGridMonth,timeGridWeek,timeGridDay", // will normally be on the right. if RTL, will be on the left
+          left: 'prev,next today',
+          center: 'title',
+          right: 'dayGridMonth,timeGridWeek,timeGridDay'
         }}
-        height={"90vh"}
+        googleCalendarApiKey='AIzaSyA-wdWC97RDxARVwgGoynaFlVqso2Sa4Ug'
+        events={events}
+        dateClick={handleDateClick}
       />
     </div>
   );
