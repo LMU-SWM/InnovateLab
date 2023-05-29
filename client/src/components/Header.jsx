@@ -19,7 +19,7 @@ const Header = () => (
                 <FontAwesomeIcon icon={faTasks} className="h-6 w-6" style={{ color: '#707070' }} />
                 <h1 className="text-xl font-semibold ml-2" style={{ color: '#707070' }}>Manage bookings</h1>
             </Link>
-            <Link to="/add_new_booking" className="flex items-center ml-6 mr-4">
+            <Link to="/new-booking" className="flex items-center ml-6 mr-4">
                 <FontAwesomeIcon icon={faPlusSquare} className="h-6 w-6" style={{ color: '#707070' }} />
                 <h1 className="text-xl font-semibold ml-2" style={{ color: '#707070' }}>Add new booking</h1>
             </Link>

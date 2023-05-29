@@ -329,9 +329,9 @@
   "resolved" "https://registry.npmjs.org/@emotion/weak-memoize/-/weak-memoize-0.3.1.tgz"
   "version" "0.3.1"
 
-"@esbuild/darwin-arm64@0.17.19":
-  "integrity" "sha512-80wEoCfF/hFKM6WE1FyBHc9SfUblloAWx6FJkFWTWiCoht9Mc0ARGEM47e67W9rI09YoUxJL68WHfDRYEAvOhg=="
-  "resolved" "https://registry.npmjs.org/@esbuild/darwin-arm64/-/darwin-arm64-0.17.19.tgz"
+"@esbuild/darwin-x64@0.17.19":
+  "integrity" "sha512-IJM4JJsLhRYr9xdtLytPLSH9k/oxR3boaUIYiHkAawtwNOXKE8KoU8tMvryogdcT8AU+Bflmh81Xn6Q0vTZbQw=="
+  "resolved" "https://registry.npmjs.org/@esbuild/darwin-x64/-/darwin-x64-0.17.19.tgz"
   "version" "0.17.19"
 
 "@eslint-community/eslint-utils@^4.2.0":
@@ -391,6 +391,35 @@
   "version" "0.2.0"
   dependencies:
     "prop-types" "^15.8.1"
+
+"@fullcalendar/core@~6.1.8":
+  "integrity" "sha512-i8JBIvZCWGO9dsMEDcx9bnsQZ9PtGSJdOXGgWbhLaGq2iq41OBdp9g9gM4b/Otv2oK8bL5Gl6CsMmb/HkDtA6Q=="
+  "resolved" "https://registry.npmjs.org/@fullcalendar/core/-/core-6.1.8.tgz"
+  "version" "6.1.8"
+  dependencies:
+    "preact" "~10.12.1"
+
+"@fullcalendar/daygrid@^6.0.2", "@fullcalendar/daygrid@~6.1.8":
+  "integrity" "sha512-kCZxQFKb9Vqa3CZRX0v7rMSJ2mlTt4gDpyLfiNJKxUAq7W51uKurPaFZWicaXy1ESHVBxKNlbx5uNjBpyu50JQ=="
+  "resolved" "https://registry.npmjs.org/@fullcalendar/daygrid/-/daygrid-6.1.8.tgz"
+  "version" "6.1.8"
+
+"@fullcalendar/interaction@^6.0.2":
+  "integrity" "sha512-r6W4E9ohaA87M2uPSlmpE2WT7Fzu7LN0u2pE6D/tThruCEaAPbN8Pw5+sqclsuyTIL09mg0eSJm/ggJekTabSA=="
+  "resolved" "https://registry.npmjs.org/@fullcalendar/interaction/-/interaction-6.1.8.tgz"
+  "version" "6.1.8"
+
+"@fullcalendar/react@^6.0.2":
+  "integrity" "sha512-E8GQSQyZHkjpwxQW5Vci7iZgN7f33ntuRcvfGii4Fn35t9VHGz2SEyKAWXpVf38elcKTZKVgajU9ipStd+1LEg=="
+  "resolved" "https://registry.npmjs.org/@fullcalendar/react/-/react-6.1.8.tgz"
+  "version" "6.1.8"
+
+"@fullcalendar/timegrid@^6.0.2":
+  "integrity" "sha512-3+3KHHCoNcaLs/gQt004hAqICbY5+WAffrZ0ePv+80HFB1OVh8BQ5XXLHSOUbTvXdgtUTcfBHuw9fhO31kt5gA=="
+  "resolved" "https://registry.npmjs.org/@fullcalendar/timegrid/-/timegrid-6.1.8.tgz"
+  "version" "6.1.8"
+  dependencies:
+    "@fullcalendar/daygrid" "~6.1.8"
 
 "@humanwhocodes/config-array@^0.11.8":
   "integrity" "sha512-UybHIJzJnR5Qc/MsD9Kr+RpO2h+/P1GhOwdiLPXK5TWk5sgTdu88bTD9UP+CKbPPh5Rni1u0GjAdYQLemG8g+g=="
@@ -2033,6 +2062,11 @@
     "picocolors" "^1.0.0"
     "source-map-js" "^1.0.2"
 
+"preact@~10.12.1":
+  "integrity" "sha512-l8386ixSsBdbreOAkqtrwqHwdvR35ID8c3rKPa8lCWuO86dBi32QWHV4vfsZK1utLLFMvw+Z5Ad4XLkZzchscg=="
+  "resolved" "https://registry.npmjs.org/preact/-/preact-10.12.1.tgz"
+  "version" "10.12.1"
+
 "prelude-ls@^1.2.1":
   "integrity" "sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g=="
   "resolved" "https://registry.npmjs.org/prelude-ls/-/prelude-ls-1.2.1.tgz"
@@ -2057,7 +2091,7 @@
   "resolved" "https://registry.npmjs.org/queue-microtask/-/queue-microtask-1.2.3.tgz"
   "version" "1.2.3"
 
-"react-dom@^17.0.0 || ^18.0.0", "react-dom@^18.2.0", "react-dom@>=16.6.0", "react-dom@>=16.8":
+"react-dom@^16.7.0 || ^17 || ^18", "react-dom@^17.0.0 || ^18.0.0", "react-dom@^18.2.0", "react-dom@>=16.6.0", "react-dom@>=16.8":
   "integrity" "sha512-6IMTriUmvsjHUjNtEDudZfuDQUoWXVxKHhlEGSk81n4YFS+r/Kl99wXiwlVXtPBtJenozv2P+hxDsw9eA7Xo6g=="
   "resolved" "https://registry.npmjs.org/react-dom/-/react-dom-18.2.0.tgz"
   "version" "18.2.0"
@@ -2105,7 +2139,7 @@
     "loose-envify" "^1.4.0"
     "prop-types" "^15.6.2"
 
-"react@^17.0.0 || ^18.0.0", "react@^18.2.0", "react@>=16.3", "react@>=16.6.0", "react@>=16.8", "react@>=16.8.0":
+"react@^16.7.0 || ^17 || ^18", "react@^17.0.0 || ^18.0.0", "react@^18.2.0", "react@>=16.3", "react@>=16.6.0", "react@>=16.8", "react@>=16.8.0":
   "integrity" "sha512-/3IjMdb2L9QbBdWiW5e3P2/npwMBaU9mHCSCUzNln0ZCYbcfTsGbTJrU/kGemdH2IWmB2ioZ+zkxtmq6g09fGQ=="
   "resolved" "https://registry.npmjs.org/react/-/react-18.2.0.tgz"
   "version" "18.2.0"
