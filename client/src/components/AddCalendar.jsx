@@ -1,39 +1,76 @@
-import { useState, useRef } from "react";
+import axios from "axios";
+import { useState, useRef, useEffect } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import googleCalendarPlugin from "@fullcalendar/google-calendar";
-import axios from "axios";
+import EventPopup from "./EventPopup";
 
 export default function AddCalendar() {
-  const [events, setEvents] = useState([]);
-  const calendarRef = useRef(null); 
+  const [showModal, setShowModal] = useState(false);
+  const [eventDataN, setEventDataN] = useState({});
+  const calendarRef = useRef(null);
+  const [loading, setLoading] = useState(false); // Added loading state
 
-  const handleDateClick = async (info) => {
-    const newEvent = {
-      summary: "New Event",
-      location: "Somewhere", // Add this
-      start: {
-        // Adjust this to reflect the start time of your event
-        dateTime: info.dateStr.length < 20 ? `${info.dateStr}T10:00:00` : info.dateStr, // Add a default time of 10:00:00 if no time is provided
-        timeZone: "Europe/Berlin",
-      },
-      end: {
-        // Adjust this to reflect the end time of your event
-        dateTime: info.dateStr.length < 20 ? `${info.dateStr}T17:00:00` : info.dateStr, // Add a default time of 17:00:00 if no time is provided
-        timeZone: "Europe/Berlin",
-      },
-    };
+  const handleDateClick = (info) => {
+    setShowModal(true);
+    setEventDataN({
+      start: info.dateStr,
+      end: info.dateStr,
+    });
+    setLoading(true);
+    calendarRef.current.getApi().refetchEvents();
+    setLoading(false);
+  };
 
+  const handleEventClick = (info) => {
+    // Prevent redirect to Google Calendar
+    info.jsEvent.cancelBubble = true;
+    info.jsEvent.preventDefault();
+    console.log(info);
+    setShowModal(true);
+    setEventDataN({
+      id: info.event.id,
+      title: info.event.title,
+      start: info.event.start,
+      end: info.event.end,
+    });
+  };
+
+  const handleEventChange = (newData) => {
+    setEventDataN(newData);
+  };
+
+  const handleSaveEvent = async () => {
     try {
-      console.log(newEvent)
+      const newEvent = {
+        summary: eventDataN.summary,
+        location: eventDataN.location,
+        start: {
+          dateTime:
+            eventDataN.start.length < 20
+              ? `${eventDataN.start}T10:00:00`
+              : eventDataN.start, // Add a default time of 10:00:00 if no time is provided,
+          timeZone: "Europe/Berlin",
+        },
+        end: {
+          dateTime:
+            eventDataN.end.length < 20
+              ? `${eventDataN.end}T17:00:00`
+              : eventDataN.end, // Add a default time of 17:00:00 if no time is provided
+          timeZone: "Europe/Berlin",
+        },
+      };
+
+      // Your code to add the event to Google Calendar...
+      console.log(newEvent);
       const response = await axios({
         method: "post",
         url: "https://www.googleapis.com/calendar/v3/calendars/c766830bf21b3fcefc994a2420463669cc60361e8a9627af791888a574368873@group.calendar.google.com/events",
         headers: {
           Authorization:
-            "Bearer ya29.a0AWY7CkmSzVRUP8T1jtPwvwExCUPS9DuEvdxOsJ3aBD9ZojoY3f6NkwunQxvvKqXt3eQtw_29hvzZrq409pHw0zbTXjXrGu25hSqEWnPfI05k8z93tGiWFGd_0n4jT-jo509FYX5ivlMNO6ISlMtyWzhVQWR6Px4aCgYKAf0SARESFQG1tDrpm-ttG5KBLaiBfwCG-ezRRw0166",
+            "Bearer ya29.a0AWY7Ckkk50QtAt0VMW10Hzl6oWu1GlCNUZvtCjMEDswVbJKsVdkGlw46c3eCpfqF1p_igt6zQIQ0Mi-0f12rcl7_xNXW-9HXqitQ3tblN6vXUF7L0TINcZ32dFQ9W7PIXdskG1UtvTptlxBaSJGQ3q1hfjlRTLUaCgYKAQESARESFQG1tDrppoEV4LG88P85R8-egjMZjg0166",
           "Content-Type": "application/json",
         },
         data: newEvent,
@@ -41,7 +78,9 @@ export default function AddCalendar() {
 
       if (response.status === 200) {
         console.log("Event added to Google Calendar");
+        setLoading(true);
         calendarRef.current.getApi().refetchEvents();
+        setLoading(false);
       } else {
         console.error(
           "Error adding event to Google Calendar:",
@@ -51,10 +90,65 @@ export default function AddCalendar() {
     } catch (error) {
       console.error("Error adding event:", error);
     }
+
+    setShowModal(false);
+    setEventDataN({});
   };
+
+  const handleDeleteEvent = async () => {
+    let eventId = eventDataN.id;
+    try {
+      console.log(eventId);
+      const response = await axios({
+        method: "delete",
+        url: `https://www.googleapis.com/calendar/v3/calendars/c766830bf21b3fcefc994a2420463669cc60361e8a9627af791888a574368873@group.calendar.google.com/events/${eventId}`,
+        headers: {
+          Authorization:
+            "Bearer ya29.a0AWY7Ckkk50QtAt0VMW10Hzl6oWu1GlCNUZvtCjMEDswVbJKsVdkGlw46c3eCpfqF1p_igt6zQIQ0Mi-0f12rcl7_xNXW-9HXqitQ3tblN6vXUF7L0TINcZ32dFQ9W7PIXdskG1UtvTptlxBaSJGQ3q1hfjlRTLUaCgYKAQESARESFQG1tDrppoEV4LG88P85R8-egjMZjg0166",
+        },
+      });
+
+      if (response.status === 204) {
+        console.log("Event deleted from Google Calendar");
+        calendarRef.current.getApi().refetchEvents();
+      } else {
+        console.error(
+          "Error deleting event from Google Calendar:",
+          response.statusText
+        );
+      }
+    } catch (error) {
+      console.error("Error deleting event:", error);
+    }
+  };
+
+  const handleCancelEvent = () => {
+    setShowModal(false);
+    setEventDataN({});
+  };
+
+  useEffect(() => {
+    // Refresh events every 10 seconds
+    const interval = setInterval(() => {
+      calendarRef.current.getApi().refetchEvents();
+    }, 10000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
 
   return (
     <div className="calendar">
+      <EventPopup
+        isOpen={showModal}
+        eventData={eventDataN}
+        onChange={handleEventChange}
+        onSave={handleSaveEvent}
+        onCancel={handleCancelEvent}
+        onDelete={handleDeleteEvent}
+      />
+
       <FullCalendar
         ref={calendarRef}
         plugins={[
@@ -72,11 +166,13 @@ export default function AddCalendar() {
         googleCalendarApiKey="AIzaSyA-wdWC97RDxARVwgGoynaFlVqso2Sa4Ug"
         eventSources={[
           {
-            googleCalendarId: 'c766830bf21b3fcefc994a2420463669cc60361e8a9627af791888a574368873@group.calendar.google.com',
+            googleCalendarId:
+              "c766830bf21b3fcefc994a2420463669cc60361e8a9627af791888a574368873@group.calendar.google.com",
             className: "gcal-event",
           },
         ]}
         dateClick={handleDateClick}
+        eventClick={handleEventClick}
       />
     </div>
   );
