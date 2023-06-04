@@ -22,6 +22,7 @@ import NewBookingPage from "./pages/NewBookingPage";
 import ManageBookingPage from "./pages/ManageBookingPage";
 import AdminPage from "./pages/AdminPage";
 import Layout from "./layouts/BaseLayout";
+import Logo from "./images/logo.svg";
 import "./App.css";
 
 function App() {
