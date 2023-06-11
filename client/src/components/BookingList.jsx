@@ -30,6 +30,26 @@ export default function BookingList() {
         );
     };
 
+    const deleteBooking = async (eventId) => {
+        await axios({
+            method: 'DELETE',
+            url: `https://www.googleapis.com/calendar/v3/calendars/c766830bf21b3fcefc994a2420463669cc60361e8a9627af791888a574368873@group.calendar.google.com/events/${eventId}?key=AIzaSyA-wdWC97RDxARVwgGoynaFlVqso2Sa4Ug`,
+            headers: { Authorization: "Bearer ya29.a0AWY7CknN8I5OxnvmSaH75bijNc9n7N2T0bKRIyko9D2R7ZxUaAUu4opbSfjO-WFxxfsqc0xTFywSFl-pvqB8W8vICP_5hlBSJ0OytzERn6LPytCsvFjpBJmR5K5UZ44I0jOwcsU8abCNQIoGssLPAGuFDSNbaCgYKAcASARESFQG1tDrpYoFYqD3QwpHcji3rKuGF3w0163" }
+        });
+    }
+
+    const handleDeleteBookings = async () => {
+        const deletionPromises = checked.map(eventId => deleteBooking(eventId));
+        await Promise.all(deletionPromises);
+
+        // Once all bookings are deleted, fetch the booking list again to update the UI.
+        const updatedItems = await fetchBookingList();
+        setItems(updatedItems);
+
+        // Reset the checked list
+        setChecked([]);
+    }
+
     const handleClosePopup = () => {
         setSelectedMeeting(null)
     };
@@ -138,7 +158,7 @@ export default function BookingList() {
                 </div>
             </div>
             <div style={{ marginTop: '20px' }}>
-                <ButtonContainer disabled={checked.length === 0} />
+                <ButtonContainer disabled={checked.length === 0} onCancelBookings={handleDeleteBookings} />
             </div>
             <div>
                 <CreateMeetingPopup open={selectedMeeting != null}
@@ -149,7 +169,7 @@ export default function BookingList() {
                                     endTime={selectedMeeting?.end.dateTime || ""}
                                     eventId={selectedMeeting?.id || ""}
                                     calendarId="c766830bf21b3fcefc994a2420463669cc60361e8a9627af791888a574368873@group.calendar.google.com"
-                                    accessToken="ya29.a0AWY7CklEELuflikXxSRPrl5BPLJv0GS9zbvFOhoAklVocJwJZ4WnrjXLscx6ZYNKCVcedJRYl8XBkJmu7RDy40qeEzB7H4DXYtCiAQp3uXQ6oWhDzxeoNmekK0a7GpKUwa1Sb71-c3pFzFYAIwrMM-B4oVk-aCgYKAdUSARESFQG1tDrp_X-SOd9Ng0mv805Jdrw0bA0163"
+                                    accessToken="ya29.a0AWY7CknN8I5OxnvmSaH75bijNc9n7N2T0bKRIyko9D2R7ZxUaAUu4opbSfjO-WFxxfsqc0xTFywSFl-pvqB8W8vICP_5hlBSJ0OytzERn6LPytCsvFjpBJmR5K5UZ44I0jOwcsU8abCNQIoGssLPAGuFDSNbaCgYKAcASARESFQG1tDrpYoFYqD3QwpHcji3rKuGF3w0163"
                                     onUpdate={handleUpdateMeeting} />
             </div>
         </div>
