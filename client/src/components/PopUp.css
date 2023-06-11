@@ -19,8 +19,32 @@
     width: 100%;
 }
 
-.input-field {
-    width: 100%;
-    padding: 8px;
+.input-container {
+    display: flex;
+    align-items: center;
     margin-bottom: 16px;
+}
+
+.input-container label {
+    width: 100px; /* Adjust the width as needed */
+    margin-right: 10px;
+}
+
+.input-field {
+    flex: 1;
+    padding: 8px;
+}
+
+.open-popup-button {
+    margin-bottom: 16px;
+}
+
+.button-group {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 16px;
+}
+
+.create-button {
+    margin-right: 8px;
 }

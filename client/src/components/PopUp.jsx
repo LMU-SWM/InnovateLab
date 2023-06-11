@@ -1,95 +1,108 @@
-import React, { useState } from 'react';
+import React, { Component } from 'react';
 import './PopUp.css';
 
-const CreateMeetingPopup = () => {
-    const [open, setOpen] = useState(false);
-    const [title, setTitle] = useState('title');
-    const [description, setDescription] = useState('description');
-    const [startTime, setStartTime] = useState('time');
-    const [endTime, setEndTime] = useState('endtime');
+class CreateMeetingPopup extends Component {
+    constructor(props) {
+        super(props);
 
-    const handleOpen = () => {
-        setOpen(true);
+        this.state = {
+            title: 'Title',
+            location: 'Location',
+            startTime: 'Start time',
+            endTime: 'End time',
+        };
+    }
+
+    handleTitleChange = (event) => {
+        this.setState({ title: event.target.value });
     };
 
-    const handleClose = () => {
-        setOpen(false);
+    handleDescriptionChange = (event) => {
+        this.setState({ description: event.target.value });
     };
 
-    const handleTitleChange = (event) => {
-        setTitle(event.target.value);
+    handleStartTimeChange = (event) => {
+        this.setState({ startTime: event.target.value });
     };
 
-    const handleDescriptionChange = (event) => {
-        setDescription(event.target.value);
+    handleEndTimeChange = (event) => {
+        this.setState({ endTime: event.target.value });
     };
 
-    const handleStartTimeChange = (event) => {
-        setStartTime(event.target.value);
-    };
+    handleSubmit = () => {
+        const { title, description, startTime, endTime } = this.state;
 
-    const handleEndTimeChange = (event) => {
-        setEndTime(event.target.value);
-    };
-
-    const handleSubmit = () => {
         // Perform the necessary logic to create the meeting using the provided data
-        console.log('Meeting created:', {
-            title,
-            description,
-            startTime,
-            endTime,
-        });
+        console.log('Meeting edited:', { title, description, startTime, endTime });
 
         // Close the pop-up component
-        handleClose();
+        this.props.onClose();
     };
 
-    return (
-        <div>
-            <button className="open-popup-button" onClick={handleOpen}>Create Meeting</button>
+    render() {
+        const { open , title, location, startTime, endTime } = this.props;
+        console.log(`${open}`)
 
-            {open && (
-                <div className="popup-container">
-                    <div className="popup-content">
-                        <h2>Create Meeting</h2>
-                        <input
-                            className="input-field"
-                            type="text"
-                            placeholder="Title"
-                            value={title}
-                            onChange={handleTitleChange}
-                        />
-                        <input
-                            className="input-field"
-                            type="text"
-                            placeholder="Description"
-                            value={description}
-                            onChange={handleDescriptionChange}
-                        />
-                        <input
-                            className="input-field"
-                            type="text"
-                            placeholder="Start Time"
-                            value={startTime}
-                            onChange={handleStartTimeChange}
-                        />
-                        <input
-                            className="input-field"
-                            type="text"
-                            placeholder="End Time"
-                            value={endTime}
-                            onChange={handleEndTimeChange}
-                        />
-                        <div className="button-group">
-                            <button className="create-button" onClick={handleSubmit}>Create</button>
-                            <button className="cancel-button" onClick={handleClose}>Cancel</button>
+        return (
+            <div>
+                {open && (
+                    <div className="popup-container">
+                        <div className="popup-content">
+                            <h2>Edit Meeting</h2>
+                            <div className="input-container">
+                                <label>Title:</label>
+                                <input
+                                    className="input-field"
+                                    type="text"
+                                    placeholder="Title"
+                                    value={title}
+                                    onChange={this.handleTitleChange}
+                                />
+                            </div>
+                            <div className="input-container">
+                                <label>Location:</label>
+                                <input
+                                    className="input-field"
+                                    type="text"
+                                    placeholder="Location"
+                                    value={location}
+                                    onChange={this.handleDescriptionChange}
+                                />
+                            </div>
+                            <div className="input-container">
+                                <label>Start Time:</label>
+                                <input
+                                    className="input-field"
+                                    type="text"
+                                    placeholder="Start Time"
+                                    value={startTime}
+                                    onChange={this.handleStartTimeChange}
+                                />
+                            </div>
+                            <div className="input-container">
+                                <label>End Time:</label>
+                                <input
+                                    className="input-field"
+                                    type="text"
+                                    placeholder="End Time"
+                                    value={endTime}
+                                    onChange={this.handleEndTimeChange}
+                                />
+                            </div>
+                            <div className="button-group">
+                                <button className="create-button" onClick={this.handleSubmit}>
+                                    Save
+                                </button>
+                                <button className="cancel-button" onClick={this.props.onClose}>
+                                    Cancel
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            )}
-        </div>
-    );
-};
+                )}
+            </div>
+        );
+    }
+}
 
 export default CreateMeetingPopup;
