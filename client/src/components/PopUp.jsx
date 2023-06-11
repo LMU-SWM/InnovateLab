@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import axios from 'axios';
 import './PopUp.css';
 
 class CreateMeetingPopup extends Component {
@@ -6,19 +7,33 @@ class CreateMeetingPopup extends Component {
         super(props);
 
         this.state = {
-            title: 'Title',
-            location: 'Location',
-            startTime: 'Start time',
-            endTime: 'End time',
+            title: this.props.title,
+            location: this.props.location,
+            startTime: this.props.startTime,
+            endTime: this.props.endTime,
         };
+    }
+
+    componentDidUpdate(prevProps) {
+        if (this.props.title !== prevProps.title ||
+            this.props.location !== prevProps.location ||
+            this.props.startTime !== prevProps.startTime ||
+            this.props.endTime !== prevProps.endTime) {
+            this.setState({
+                title: this.props.title,
+                location: this.props.location,
+                startTime: this.props.startTime,
+                endTime: this.props.endTime,
+            });
+        }
     }
 
     handleTitleChange = (event) => {
         this.setState({ title: event.target.value });
     };
 
-    handleDescriptionChange = (event) => {
-        this.setState({ description: event.target.value });
+    handleLocationChange = (event) => {
+        this.setState({ location: event.target.value });
     };
 
     handleStartTimeChange = (event) => {
@@ -30,17 +45,44 @@ class CreateMeetingPopup extends Component {
     };
 
     handleSubmit = () => {
-        const { title, description, startTime, endTime } = this.state;
+        const { title, location, startTime, endTime } = this.state;
+        const { eventId, calendarId, accessToken } = this.props;
 
-        // Perform the necessary logic to create the meeting using the provided data
-        console.log('Meeting edited:', { title, description, startTime, endTime });
+        const eventData = {
+            summary: title,
+            location: location,
+            start: {
+                dateTime: startTime,
+            },
+            end: {
+                dateTime: endTime,
+            },
+        };
 
-        // Close the pop-up component
+        axios.patch(`https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events/${eventId}`, eventData, {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+        })
+            .then(response => {
+                console.log('Meeting edited:', response.data);
+                this.props.onUpdate(response.data); // add this line
+                this.props.onClose();
+            })
+            .catch(error => {
+                console.log('Error updating meeting:', error);
+            });
+
         this.props.onClose();
     };
 
+
+
     render() {
-        const { open , title, location, startTime, endTime } = this.props;
+        const { title, location, startTime, endTime } = this.state;
+        const { open } = this.props;
         console.log(`${open}`)
 
         return (
@@ -66,7 +108,7 @@ class CreateMeetingPopup extends Component {
                                     type="text"
                                     placeholder="Location"
                                     value={location}
-                                    onChange={this.handleDescriptionChange}
+                                    onChange={this.handleLocationChange}
                                 />
                             </div>
                             <div className="input-container">
@@ -90,7 +132,7 @@ class CreateMeetingPopup extends Component {
                                 />
                             </div>
                             <div className="button-group">
-                                <button className="create-button" onClick={this.handleSubmit}>
+                                <button className="save-button" onClick={this.handleSubmit}>
                                     Save
                                 </button>
                                 <button className="cancel-button" onClick={this.props.onClose}>

@@ -70,7 +70,7 @@ export default function AddCalendar() {
         url: "https://www.googleapis.com/calendar/v3/calendars/c766830bf21b3fcefc994a2420463669cc60361e8a9627af791888a574368873@group.calendar.google.com/events",
         headers: {
           Authorization:
-            "Bearer ya29.a0AWY7Ckkk50QtAt0VMW10Hzl6oWu1GlCNUZvtCjMEDswVbJKsVdkGlw46c3eCpfqF1p_igt6zQIQ0Mi-0f12rcl7_xNXW-9HXqitQ3tblN6vXUF7L0TINcZ32dFQ9W7PIXdskG1UtvTptlxBaSJGQ3q1hfjlRTLUaCgYKAQESARESFQG1tDrppoEV4LG88P85R8-egjMZjg0166",
+            "Bearer ya29.a0AWY7CklEELuflikXxSRPrl5BPLJv0GS9zbvFOhoAklVocJwJZ4WnrjXLscx6ZYNKCVcedJRYl8XBkJmu7RDy40qeEzB7H4DXYtCiAQp3uXQ6oWhDzxeoNmekK0a7GpKUwa1Sb71-c3pFzFYAIwrMM-B4oVk-aCgYKAdUSARESFQG1tDrp_X-SOd9Ng0mv805Jdrw0bA0163",
           "Content-Type": "application/json",
         },
         data: newEvent,
@@ -104,7 +104,7 @@ export default function AddCalendar() {
         url: `https://www.googleapis.com/calendar/v3/calendars/c766830bf21b3fcefc994a2420463669cc60361e8a9627af791888a574368873@group.calendar.google.com/events/${eventId}`,
         headers: {
           Authorization:
-            "Bearer ya29.a0AWY7Ckkk50QtAt0VMW10Hzl6oWu1GlCNUZvtCjMEDswVbJKsVdkGlw46c3eCpfqF1p_igt6zQIQ0Mi-0f12rcl7_xNXW-9HXqitQ3tblN6vXUF7L0TINcZ32dFQ9W7PIXdskG1UtvTptlxBaSJGQ3q1hfjlRTLUaCgYKAQESARESFQG1tDrppoEV4LG88P85R8-egjMZjg0166",
+            "Bearer ya29.a0AWY7CklEELuflikXxSRPrl5BPLJv0GS9zbvFOhoAklVocJwJZ4WnrjXLscx6ZYNKCVcedJRYl8XBkJmu7RDy40qeEzB7H4DXYtCiAQp3uXQ6oWhDzxeoNmekK0a7GpKUwa1Sb71-c3pFzFYAIwrMM-B4oVk-aCgYKAdUSARESFQG1tDrp_X-SOd9Ng0mv805Jdrw0bA0163",
         },
       });
 

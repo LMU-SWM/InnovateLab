@@ -24,6 +24,12 @@ export default function BookingList() {
         setSelectedMeeting(meeting);
     };
 
+    const handleUpdateMeeting = (updatedMeeting) => {
+        setItems((prevItems) =>
+            prevItems.map((item) => (item.id === updatedMeeting.id ? updatedMeeting : item))
+        );
+    };
+
     const handleClosePopup = () => {
         setSelectedMeeting(null)
     };
@@ -140,7 +146,11 @@ export default function BookingList() {
                                     title={selectedMeeting?.summary || ""}
                                     location={selectedMeeting?.location || ""}
                                     startTime={selectedMeeting?.start.dateTime || ""}
-                                    endTime={selectedMeeting?.end.dateTime || ""}/>
+                                    endTime={selectedMeeting?.end.dateTime || ""}
+                                    eventId={selectedMeeting?.id || ""}
+                                    calendarId="c766830bf21b3fcefc994a2420463669cc60361e8a9627af791888a574368873@group.calendar.google.com"
+                                    accessToken="ya29.a0AWY7CklEELuflikXxSRPrl5BPLJv0GS9zbvFOhoAklVocJwJZ4WnrjXLscx6ZYNKCVcedJRYl8XBkJmu7RDy40qeEzB7H4DXYtCiAQp3uXQ6oWhDzxeoNmekK0a7GpKUwa1Sb71-c3pFzFYAIwrMM-B4oVk-aCgYKAdUSARESFQG1tDrp_X-SOd9Ng0mv805Jdrw0bA0163"
+                                    onUpdate={handleUpdateMeeting} />
             </div>
         </div>
     );
