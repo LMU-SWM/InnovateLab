@@ -1,15 +1,63 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Checkbox, TextField, Box, Pagination } from '@mui/material';
 import FilterRoom from "./FilterRoom.jsx";
 import FilterBookingType from "./FilterBookingType.jsx";
 import ButtonContainer from "./ButtonContainer.jsx";
 import FilterCreator from "./FilterCreator.jsx";
+import CreateMeetingPopup from "./PopUp";
+import axios from "axios";
 
 export default function BookingList() {
     const [checked, setChecked] = useState([]);
     const [search, setSearch] = useState("");
     const [page, setPage] = useState(1);
+    const [items, setItems] = useState([]);
+    const [selectedMeeting, setSelectedMeeting] = useState(null);
     const itemsPerPage = 10;
+
+    const authToken = process.env.REACT_APP_AUTH_TOKEN;
+    const calendarId = process.env.REACT_APP_CALENDAR_ID;
+    const apiKey  = process.env.REACT_APP_API_KEY;
+    console.log(calendarId,authToken )
+
+    useEffect(() => {
+        fetchBookingList().then((items) => setItems(items));
+    }, []);
+
+    const handleMeetingClick = (meeting) => {
+        console.log('Click');
+        setSelectedMeeting(meeting);
+    };
+
+    const handleUpdateMeeting = (updatedMeeting) => {
+        setItems((prevItems) =>
+            prevItems.map((item) => (item.id === updatedMeeting.id ? updatedMeeting : item))
+        );
+    };
+
+    const deleteBooking = async (eventId) => {
+        await axios({
+            method: 'DELETE',
+            url: `https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events/${eventId}?key=${apiKey}`,
+            headers: { Authorization: `Bearer ${authToken}` }
+        });
+    }
+
+    const handleDeleteBookings = async () => {
+        const deletionPromises = checked.map(eventId => deleteBooking(eventId));
+        await Promise.all(deletionPromises);
+
+        // Once all bookings are deleted, fetch the booking list again to update the UI.
+        const updatedItems = await fetchBookingList();
+        setItems(updatedItems);
+
+        // Reset the checked list
+        setChecked([]);
+    }
+
+    const handleClosePopup = () => {
+        setSelectedMeeting(null)
+    };
 
     // Handle toggle for checkbox
     const handleToggle = (value) => () => {
@@ -33,110 +81,19 @@ export default function BookingList() {
         setPage(value);
     }
 
+    const fetchBookingList = async () => {
+        const response = await axios({
+            method: "GET",
+            url: `https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events?key=${apiKey}`
+        });
+        return response.data.items;
+    };
 
     const getBookingList = () => {
-        const data = [
-            {
-                Id: '1',
-                BookingName: 'Meeting 1',
-                DateTime: 'May 27, 2023 9:00 AM',
-                Location: 'Conference Room A',
-            },
-            {
-                Id: '2',
-                BookingName: 'Meeting 2',
-                DateTime: 'May 27, 2023 2:00 PM',
-                Location: 'Conference Room B',
-            },
-            {
-                Id: '3',
-                BookingName: 'Meeting 3',
-                DateTime: 'May 28, 2023 10:30 AM',
-                Location: 'Conference Room C',
-            },
-            {
-                Id: '4',
-                BookingName: 'Meeting 3',
-                DateTime: 'May 28, 2023 10:30 AM',
-                Location: 'Conference Room C',
-            },
-            {
-                Id: '5',
-                BookingName: 'Meeting 3',
-                DateTime: 'May 28, 2023 10:30 AM',
-                Location: 'Conference Room C',
-            },
-            {
-                Id: '6',
-                BookingName: 'Meeting 3',
-                DateTime: 'May 28, 2023 10:30 AM',
-                Location: 'Conference Room C',
-            },
-            {
-                Id: '7',
-                BookingName: 'Meeting 3',
-                DateTime: 'May 28, 2023 10:30 AM',
-                Location: 'Conference Room C',
-            },
-            {
-                Id: '8',
-                BookingName: 'Meeting 3',
-                DateTime: 'May 28, 2023 10:30 AM',
-                Location: 'Conference Room C',
-            },
-            {
-                Id: '9',
-                BookingName: 'Meeting 1',
-                DateTime: 'May 27, 2023 9:00 AM',
-                Location: 'Conference Room A',
-            },
-            {
-                Id: '10',
-                BookingName: 'Meeting 2',
-                DateTime: 'May 27, 2023 2:00 PM',
-                Location: 'Conference Room B',
-            },
-            {
-                Id: '11',
-                BookingName: 'Meeting 3',
-                DateTime: 'May 28, 2023 10:30 AM',
-                Location: 'Conference Room C',
-            },
-            {
-                Id: '12',
-                BookingName: 'Meeting 3',
-                DateTime: 'May 28, 2023 10:30 AM',
-                Location: 'Conference Room C',
-            },
-            {
-                Id: '13',
-                BookingName: 'Meeting 3',
-                DateTime: 'May 28, 2023 10:30 AM',
-                Location: 'Conference Room C',
-            },
-            {
-                Id: '14',
-                BookingName: 'Meeting 3',
-                DateTime: 'May 28, 2023 10:30 AM',
-                Location: 'Conference Room C',
-            },
-            {
-                Id: '15',
-                BookingName: 'Meeting 3',
-                DateTime: 'May 28, 2023 10:30 AM',
-                Location: 'Conference Room C',
-            },
-            {
-                Id: '16',
-                BookingName: 'Meeting 3',
-                DateTime: 'May 28, 2023 10:30 AM',
-                Location: 'Conference Room C',
-            },
-            // Add more objects as needed
-        ]
+        const data= items;
 
         // FilterRoom data based on search
-        const filteredData = data.filter(item => item.BookingName.toLowerCase().includes(search.toLowerCase()));
+        const filteredData = data.filter(item => item.summary.toLowerCase().includes(search.toLowerCase()));
 
         // Implement pagination
         const paginatedData = filteredData.slice((page - 1) * itemsPerPage, page * itemsPerPage);
@@ -168,24 +125,24 @@ export default function BookingList() {
                                 </TableHead>
                                 <TableBody>
                                     {getBookingList().data.map((value) => {
-                                        const labelId = `checkbox-list-label-${value.Id}`;
+                                        const labelId = `checkbox-list-label-${value.id}`;
 
                                         return (
-                                            <TableRow key={value.Id} role="checkbox">
+                                            <TableRow key={value.id} role="checkbox" onClick={() => handleMeetingClick(value)}>
                                                 <TableCell padding="checkbox">
                                                     <Checkbox
                                                         edge="start"
                                                         onClick={(event) => event.stopPropagation()} // Prevents row click event
-                                                        onChange={handleToggle(value.Id)}
-                                                        checked={checked.indexOf(value.Id) !== -1}
+                                                        onChange={handleToggle(value.id)}
+                                                        checked={checked.indexOf(value.id) !== -1}
                                                         tabIndex={-1}
                                                         disableRipple
                                                         inputProps={{ 'aria-labelledby': labelId }}
                                                     />
                                                 </TableCell>
-                                                <TableCell id={labelId}>{value.BookingName}</TableCell>
-                                                <TableCell>{value.Location}</TableCell>
-                                                <TableCell>{value.DateTime}</TableCell>
+                                                <TableCell id={labelId}>{value.summary}</TableCell>
+                                                <TableCell>{value.location}</TableCell>
+                                                <TableCell>{value.start.dateTime}</TableCell>
                                             </TableRow>
                                         );
                                     })}
@@ -206,9 +163,20 @@ export default function BookingList() {
                 </div>
             </div>
             <div style={{ marginTop: '20px' }}>
-                <ButtonContainer disabled={checked.length === 0} />
+                <ButtonContainer disabled={checked.length === 0} onCancelBookings={handleDeleteBookings} />
+            </div>
+            <div>
+                <CreateMeetingPopup open={selectedMeeting != null}
+                                    onClose={handleClosePopup}
+                                    title={selectedMeeting?.summary || ""}
+                                    location={selectedMeeting?.location || ""}
+                                    startTime={selectedMeeting?.start.dateTime || ""}
+                                    endTime={selectedMeeting?.end.dateTime || ""}
+                                    eventId={selectedMeeting?.id || ""}
+                                    calendarId={calendarId}
+                                    accessToken={authToken}
+                                    onUpdate={handleUpdateMeeting} />
             </div>
         </div>
     );
-    }
-    
+}
