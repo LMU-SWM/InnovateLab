@@ -15,6 +15,11 @@ export default function BookingList() {
     const [selectedMeeting, setSelectedMeeting] = useState(null);
     const itemsPerPage = 10;
 
+    const authToken = process.env.REACT_APP_AUTH_TOKEN;
+    const calendarId = process.env.REACT_APP_CALENDAR_ID;
+    const apiKey  = process.env.REACT_APP_API_KEY;
+    console.log(calendarId,authToken )
+
     useEffect(() => {
         fetchBookingList().then((items) => setItems(items));
     }, []);
@@ -33,8 +38,8 @@ export default function BookingList() {
     const deleteBooking = async (eventId) => {
         await axios({
             method: 'DELETE',
-            url: `https://www.googleapis.com/calendar/v3/calendars/c766830bf21b3fcefc994a2420463669cc60361e8a9627af791888a574368873@group.calendar.google.com/events/${eventId}?key=AIzaSyA-wdWC97RDxARVwgGoynaFlVqso2Sa4Ug`,
-            headers: { Authorization: "Bearer ya29.a0AWY7CknN8I5OxnvmSaH75bijNc9n7N2T0bKRIyko9D2R7ZxUaAUu4opbSfjO-WFxxfsqc0xTFywSFl-pvqB8W8vICP_5hlBSJ0OytzERn6LPytCsvFjpBJmR5K5UZ44I0jOwcsU8abCNQIoGssLPAGuFDSNbaCgYKAcASARESFQG1tDrpYoFYqD3QwpHcji3rKuGF3w0163" }
+            url: `https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events/${eventId}?key=${apiKey}`,
+            headers: { Authorization: `Bearer ${authToken}` }
         });
     }
 
@@ -79,7 +84,7 @@ export default function BookingList() {
     const fetchBookingList = async () => {
         const response = await axios({
             method: "GET",
-            url: "https://www.googleapis.com/calendar/v3/calendars/c766830bf21b3fcefc994a2420463669cc60361e8a9627af791888a574368873@group.calendar.google.com/events?key=AIzaSyA-wdWC97RDxARVwgGoynaFlVqso2Sa4Ug"
+            url: `https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events?key=${apiKey}`
         });
         return response.data.items;
     };
@@ -168,8 +173,8 @@ export default function BookingList() {
                                     startTime={selectedMeeting?.start.dateTime || ""}
                                     endTime={selectedMeeting?.end.dateTime || ""}
                                     eventId={selectedMeeting?.id || ""}
-                                    calendarId="c766830bf21b3fcefc994a2420463669cc60361e8a9627af791888a574368873@group.calendar.google.com"
-                                    accessToken="ya29.a0AWY7CknN8I5OxnvmSaH75bijNc9n7N2T0bKRIyko9D2R7ZxUaAUu4opbSfjO-WFxxfsqc0xTFywSFl-pvqB8W8vICP_5hlBSJ0OytzERn6LPytCsvFjpBJmR5K5UZ44I0jOwcsU8abCNQIoGssLPAGuFDSNbaCgYKAcASARESFQG1tDrpYoFYqD3QwpHcji3rKuGF3w0163"
+                                    calendarId={calendarId}
+                                    accessToken={authToken}
                                     onUpdate={handleUpdateMeeting} />
             </div>
         </div>

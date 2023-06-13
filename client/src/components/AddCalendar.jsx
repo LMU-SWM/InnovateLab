@@ -13,6 +13,11 @@ export default function AddCalendar() {
   const calendarRef = useRef(null);
   const [loading, setLoading] = useState(false); // Added loading state
 
+  const authToken = process.env.REACT_APP_AUTH_TOKEN;
+  const calendarId = process.env.REACT_APP_CALENDAR_ID;
+  const apiKey  = process.env.REACT_APP_API_KEY;
+  console.log(calendarId,authToken )
+
   const handleDateClick = (info) => {
     setShowModal(true);
     setEventDataN({
@@ -67,10 +72,11 @@ export default function AddCalendar() {
       console.log(newEvent);
       const response = await axios({
         method: "post",
-        url: "https://www.googleapis.com/calendar/v3/calendars/c766830bf21b3fcefc994a2420463669cc60361e8a9627af791888a574368873@group.calendar.google.com/events",
+        url: `https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events`,
+
         headers: {
           Authorization:
-            "Bearer ya29.a0AWY7CknN8I5OxnvmSaH75bijNc9n7N2T0bKRIyko9D2R7ZxUaAUu4opbSfjO-WFxxfsqc0xTFywSFl-pvqB8W8vICP_5hlBSJ0OytzERn6LPytCsvFjpBJmR5K5UZ44I0jOwcsU8abCNQIoGssLPAGuFDSNbaCgYKAcASARESFQG1tDrpYoFYqD3QwpHcji3rKuGF3w0163",
+          `Bearer ${authToken}`,
           "Content-Type": "application/json",
         },
         data: newEvent,
@@ -101,10 +107,10 @@ export default function AddCalendar() {
       console.log(eventId);
       const response = await axios({
         method: "delete",
-        url: `https://www.googleapis.com/calendar/v3/calendars/c766830bf21b3fcefc994a2420463669cc60361e8a9627af791888a574368873@group.calendar.google.com/events/${eventId}`,
+        url: `https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events/${eventId}`,
         headers: {
           Authorization:
-            "Bearer ya29.a0AWY7CknN8I5OxnvmSaH75bijNc9n7N2T0bKRIyko9D2R7ZxUaAUu4opbSfjO-WFxxfsqc0xTFywSFl-pvqB8W8vICP_5hlBSJ0OytzERn6LPytCsvFjpBJmR5K5UZ44I0jOwcsU8abCNQIoGssLPAGuFDSNbaCgYKAcASARESFQG1tDrpYoFYqD3QwpHcji3rKuGF3w0163",
+            `Bearer ${authToken}`,
         },
       });
 
@@ -167,7 +173,7 @@ export default function AddCalendar() {
         eventSources={[
           {
             googleCalendarId:
-              "c766830bf21b3fcefc994a2420463669cc60361e8a9627af791888a574368873@group.calendar.google.com",
+              `${calendarId}`,
             className: "gcal-event",
           },
         ]}
