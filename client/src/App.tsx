@@ -24,6 +24,7 @@ import AdminPage from "./pages/AdminPage";
 import Layout from "./layouts/BaseLayout";
 import Logo from "./images/logo.svg";
 import "./App.css";
+import RoomTimeslotSearchPage from "./pages/RoomTimeslotSearchPage";
 
 function App() {
   const { isAuthenticated, logout } = useAuth0();
@@ -190,6 +191,15 @@ function App() {
                   </Button>
                 )}
                 {isAuthenticated && (
+                    <Button
+                        component={RouterLink}
+                        to="/search-timeslot"
+                        sx={{ my: 2, color: "white", display: "block" }}
+                    >
+                      Search Timeslot
+                    </Button>
+                )}
+                {isAuthenticated && (
                   <Button
                     component={RouterLink}
                     to="/manage-booking"
@@ -220,6 +230,7 @@ function App() {
           <Route path="/signIn" element={<SignIn />} />
           <Route path="/new-booking" element={<NewBookingPage />} />
           <Route path="/manage-booking" element={<ManageBookingPage />} />
+          <Route path="/search-timeslot" element={<RoomTimeslotSearchPage />} />
           <Route path="/admin" element={<AdminPage />} />
           <Route path="*" element={<SignIn />} />
           </Route>
