@@ -62,6 +62,21 @@ class RoomTimeslotSearch extends Component {
         });
     };
 
+    handleParticipantsChange = (value) => {
+        this.setState({
+            ...this.state,
+            ['participants']: value,
+        });
+    }
+
+    removeParticipant = (participantToRemove) => {
+        this.setState(prevState => {
+            const participants = prevState.participants.filter(participant => participant !== participantToRemove);
+            return { participants };
+        });
+        ;
+    };
+
     render() {
         const participants = ["Michael Soul", "Veronika Kori", "Participant3"]; // replace this with actual participant list
 
@@ -119,11 +134,15 @@ class RoomTimeslotSearch extends Component {
                                 options={participants}
                                 getOptionLabel={(option) => option}
                                 defaultValue={[]}
+                                value={this.state.participants}
                                 renderTags={(tagValue) =>
                                     tagValue.map((option, index) => (
-                                        <Avatar sx={{ marginRight: '2px'}} >{option[0]}</Avatar>
+                                        <Avatar sx={{ marginRight: '2px'}} onClick={() => this.removeParticipant(option)}>{option[0]}</Avatar>
                                     ))
                                 }
+                                onChange={(event, newValue) => {
+                                    this.handleParticipantsChange(newValue);
+                                }}
                                 renderInput={(params) => (
                                     <TextField {...params} variant="outlined" style={{backgroundColor: 'white', borderRadius: '4px'}} label="Participants" placeholder="Participants" />
                                 )}
