@@ -1,5 +1,16 @@
 import React from "react";
-import {Checkbox, Chip, Divider, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from "@mui/material";
+import {
+    Checkbox,
+    Chip,
+    Divider,
+    styled,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow
+} from "@mui/material";
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import ListItemButton from "@mui/material/ListItemButton";
@@ -63,12 +74,18 @@ function RoomTimeslotListView() {
 
     const itemsGroupedByDate = groupByDate(getItems().data);
 
+    const StyledTableRow = styled(TableRow)`
+  &:last-child td, &:last-child th {
+    border: 0;
+  }
+`;
+
     return (
         <div>
             {Object.keys(itemsGroupedByDate).map(dateKey => (
                 <div key={dateKey}>
                     <Divider sx={{ marginY: '10px'}}>
-                        <Chip label={dateKey} />
+                        <Chip label={dateKey} color="primary" sx={{fontSize: '17px'}} />
                     </Divider>
                     <TableContainer style={{ width: '100%', maxWidth: '100%', backgroundColor: 'background.paper'}}>
                         <Table>
@@ -77,7 +94,7 @@ function RoomTimeslotListView() {
                                     const labelId = `checkbox-list-label-${value.id}`;
 
                                     return (
-                                        <TableRow key={value.id} role="checkbox">
+                                        <StyledTableRow key={value.id} role="checkbox">
                                             <TableCell id={labelId}>
                                                 <LocationOnIcon />
                                                 {value.room}
@@ -94,7 +111,7 @@ function RoomTimeslotListView() {
                                                     Book
                                                 </Button>
                                             </TableCell>
-                                        </TableRow>
+                                        </StyledTableRow>
                                     );
                                 })}
                             </TableBody>

@@ -38,6 +38,7 @@ class RoomTimeslotSearch extends Component {
                             label="Duration (h)"
                             name="duration"
                             type="number"
+                            variant="filled"
                             value={this.state.duration}
                             onChange={this.handleChange}
                             sx={{ width: '10ch'}}
