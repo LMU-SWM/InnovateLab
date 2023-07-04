@@ -51,9 +51,14 @@ module.exports = (db) => {
 
       // Delete the calendar data from MongoDB
       const calendarsCollection = db.collection("calendars");
-      await calendarsCollection.deleteOne({ id: req.params.calendarId });
+      const deletionResult = await calendarsCollection.deleteOne({ id: req.params.calendarId });
+      
+      if (deletionResult.deletedCount === 1) {
+        res.json({ message: "Calendar deleted successfully" + req.params.calendarId  });
+      } else {
+        res.status(404).json({ error: "Calendar not found" });
+      }
 
-      res.json({ message: "Calendar deleted successfully" });
     } catch (error) {
       console.error("Error deleting calendar:", error);
       res.status(500).json({ error: "Failed to delete calendar" });
@@ -109,7 +114,6 @@ module.exports = (db) => {
   };
   
   // Implement other calendar-related functions like updateCalendar here
-
   return {
     createCalendar,
     deleteCalendar,

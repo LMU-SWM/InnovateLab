@@ -89,6 +89,31 @@ module.exports = (db) => {
     }
   };
 
+  const getEventById = async (req, res) => {
+    try {
+      const { owner, eventId } = req.query; // Extract owner and eventId from query parameters
+  
+      // Define the query. If an owner is provided, filter events by owner.
+      // If an eventId is provided, filter events by eventId.
+      // If neither owner nor eventId is provided, the query will be an empty object and fetch all events.
+      const query = {};
+      if (owner) query.owner = owner;
+      if (eventId) query.eventId = eventId;
+  
+      const eventCollection = db.collection("events");
+      const events = await eventCollection.find(query).toArray();
+  
+      if (eventId && events.length === 0) {
+        return res.status(404).json({ error: "Event not found" });
+      }
+  
+      res.json(events);
+    } catch (error) {
+      console.error("Error getting events:", error);
+      res.status(500).json({ error: "Failed to get events" });
+    }
+  };
+
   const modifyEvent = async (req, res) => {
     try {
       const auth = await google.auth.getClient({
@@ -220,6 +245,7 @@ module.exports = (db) => {
   return {
     createEvent,
     getEvents,
+    getEventById,
     deleteEvent,
     modifyEvent,
   };
