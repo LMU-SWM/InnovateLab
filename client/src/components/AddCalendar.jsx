@@ -133,6 +133,36 @@ export default function AddCalendar() {
     setEventDataN({});
   };
 
+  const handleCheckAvailability = () => {
+    console.log("Start");
+    const auth0Token = localStorage.getItem('USER_AUTH0_TOKEN');
+    console.log("Token: ", auth0Token);
+  
+    fetch('http://localhost:3001/availablity/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${auth0Token}`,
+      },
+      body: JSON.stringify({
+        calendarId: 'sujaycjoshy@gmail.com', // Replace with the user's Google Calendar ID
+        timeMin: '2023-07-04T09:00:00', // Replace with the desired start time
+        timeMax: '2023-07-04T17:00:00', // Replace with the desired end time
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data); // Handle the response data as needed
+      })
+      .catch((error) => {
+        console.error('Error checking availability:', error);
+      });
+  };
+  
+  
+  
+
+
   useEffect(() => {
     // Refresh events every 10 seconds
     const interval = setInterval(() => {
@@ -153,6 +183,7 @@ export default function AddCalendar() {
         onSave={handleSaveEvent}
         onCancel={handleCancelEvent}
         onDelete={handleDeleteEvent}
+        onCheckAvailability={handleCheckAvailability}
       />
 
       <FullCalendar

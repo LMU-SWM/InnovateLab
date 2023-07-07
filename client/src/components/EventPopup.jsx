@@ -1,13 +1,17 @@
 import React from "react";
 import { Modal, Box, Typography, TextField, Button, FormControlLabel, Checkbox } from "@mui/material";
 
-function EventPopup({ isOpen, eventData, onChange, onSave, onCancel, onDelete }) {
+function EventPopup({ isOpen, eventData, onChange, onSave, onCancel, onDelete, onCheckAvailability }) {
   const handleChange = (field) => (e) => {
     onChange({ ...eventData, [field]: e.target.value });
   };
 
   const handleCheckboxChange = (field) => (e) => {
     onChange({ ...eventData, [field]: e.target.checked });
+  };
+
+  const checkAvailability = (field) => (e)  => {
+    onCheckAvailability(); // Call the onCheckAvailability prop with the eventData
   };
 
   return (
@@ -112,8 +116,8 @@ function EventPopup({ isOpen, eventData, onChange, onSave, onCancel, onDelete })
           <Button variant="contained" color="error" onClick={onDelete} sx={{ mr: 1 }}>
             Delete
           </Button>
-          <Button variant="contained" onClick={onCancel}>
-            Cancel
+          <Button variant="contained" onClick={onCheckAvailability} sx={{ mr: 1 }}>
+            Check Availability
           </Button>
         </Box>
       </Box>

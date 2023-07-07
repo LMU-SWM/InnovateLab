@@ -159,3 +159,17 @@ const removeItemFromRoom = async (req, res) => {
     // Export other calendar-related functions here
   };
 };
+
+
+Discussion:
+
+The meeting revolved around the access and utilization of SWM resources for your project, with two primary points of discussion:
+IT Infrastructure for Employee Data Storage: An expert was involved to provide more information about the IT infrastructure utilized at SWM for storing employee data. The team sought to understand the system specifics such as identity management system employed by SWM for facilitating the design of appropriate user authentication and access control mechanisms.
+Hosting Options on SWM-Owned Server: The feasibility of hosting the application on an SWM server was discussed, considering their policies, security standards, and hosting procedures. In case hosting on SWM servers wasn't feasible, the discussion would pivot towards alternative hosting options like cloud service providers or managed hosting services.
+Additionally, the topic of ChatGPT was touched upon, noting its test phase status and API accessibility restrictions within the internal network. However, the priority for this has been deprioritized.
+
+Conclusion:
+
+Due to the short duration of the project and procedural requirements for a "Schutzbedarfsfeststellung", it was concluded that it was not viable to utilize SWM resources for the project. Therefore, the following changes need to be considered:
+Continue Development with Available Resources: Development of the prototype needs to continue using the available resources. It was acknowledged that the prototype's integration and progress might not be perfect.
+Conversion to Docker: Given the circumstances, the project needs to convert its entire infrastructure to Docker containers. This implies that the application would need to be designed and packaged into Docker containers to ensure its portability and seamless operation irrespective of the hosting environment, which may not be the initially intended SWM servers.

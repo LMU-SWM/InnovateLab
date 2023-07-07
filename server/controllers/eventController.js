@@ -13,9 +13,9 @@ module.exports = (db) => {
       });
       const { calendarId } = req.body;
       const uuid_eventId = uuidv4();
-
+  
       const calendar = google.calendar({ version: "v3", auth });
-
+  
       const event = {
         eventId: uuid_eventId,
         owner: req.body.owner,
@@ -36,13 +36,28 @@ module.exports = (db) => {
         // attendees: req.body.attendees || [],
         // Add any other optional parameters you want to include
       };
-
+  
+      // Check if the timeslot is available
+      const eventsResponse = await calendar.events.list({
+        calendarId: calendarId,
+        timeMin: event.start.dateTime,
+        timeMax: event.end.dateTime,
+        singleEvents: true,
+      });
+  
+      const existingEvents = eventsResponse.data.items;
+      if (existingEvents && existingEvents.length > 0) {
+        // There is already an event in the specified timeslot
+        res.status(409).json({ error: "Timeslot is not available" });
+        return;
+      }
+  
       const response = await calendar.events.insert({
         calendarId: calendarId, // Use the provided calendarId
         resource: event,
         sendUpdates: "none",
       });
-
+  
       // Save the event to MongoDB
       const newEvent = new EventModel({
         eventId: event.eventId,
@@ -59,18 +74,18 @@ module.exports = (db) => {
         googleCalendarEventId: response.data.id, // Save the Google Calendar event ID
         calendarId: calendarId
       });
-      
+  
       // Save the calendar data in MongoDB
       const eventCollection = db.collection("events");
       await eventCollection.insertOne(newEvent);
-
+  
       res.json({ message: "Event created successfully", event: response.data });
     } catch (error) {
       console.error("Error creating event:", error);
       res.status(500).json({ error: "Failed to create event" });
     }
   };
-
+  
   const getEvents = async (req, res) => {
     try {
       const { owner } = req.query; // Extract owner from query parameters
