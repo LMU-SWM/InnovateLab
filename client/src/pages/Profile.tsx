@@ -203,7 +203,7 @@ function Profile(): JSX.Element {
 
       <section style={{ backgroundColor: "#f0f0f0", padding: "1rem" }}>
         <Typography variant="h6" align="center" gutterBottom>
-          Select your persoanl calendars to use:
+          Select your personal calendar(s) to use:
         </Typography>
 
         <div
@@ -217,7 +217,7 @@ function Profile(): JSX.Element {
             <Table>
               <TableHead style={{ backgroundColor: "#b3e5fc" }}>
                 <TableRow>
-                  <TableCell>Calendar</TableCell>
+                  <TableCell>Calendar Name</TableCell>
                   <TableCell align="center">Select</TableCell>
                 </TableRow>
               </TableHead>

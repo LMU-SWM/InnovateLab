@@ -220,7 +220,7 @@ function App() {
           <Route path="/signIn" element={<SignIn />} />
           <Route path="/new-booking" element={<NewBookingPage />} />
           <Route path="/manage-booking" element={<ManageBookingPage />} />
-          <Route path="/admin" element={<AdminPage />} />
+          <Route path="/adminPage" element={<AdminPage />} />
           <Route path="*" element={<SignIn />} />
           </Route>
         </Routes>
@@ -230,3 +230,4 @@ function App() {
 }
 
 export default App;
+

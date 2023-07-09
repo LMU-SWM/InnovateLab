@@ -7,13 +7,13 @@ module.exports = (db) => {
   // Controller for creating a room
   const createRoom = async (req, res) => {
     try {
-      const { name, capacity } = req.body;
+      const { name, capacity, items } = req.body;
 
       // Create a new room document using the Room model
       const newRoom = new Room({
         name: name,
         capacity: capacity,
-        items: [],
+        items: items,
         roomId: uuidv4(),
       });
 
@@ -31,6 +31,37 @@ module.exports = (db) => {
     }
   };
 
+  const editRoom = async (req, res) => {
+    try {
+      const roomId = req.params.roomId;
+      const { name, capacity, items } = req.body;
+  
+      // Find the room document with the provided roomId
+      const roomCollection = db.collection("rooms");
+      const existingRoom = await roomCollection.findOne({ roomId });
+      console.log("Existing:",existingRoom)
+      if (!existingRoom) {
+        return res.status(404).json({ error: "Room not found" });
+      }
+  
+      // Update the room document with the new values
+      existingRoom.name = name;
+      existingRoom.capacity = capacity;
+      existingRoom.items = items;
+      console.log("New:",existingRoom)
+      // Save the updated room document to MongoDB
+      await roomCollection.updateOne({ roomId }, { $set: existingRoom });
+  
+      res.json({
+        message: "Room updated successfully",
+        room: existingRoom,
+      });
+    } catch (error) {
+      console.error("Error editing room:", error);
+      res.status(500).json({ error: "Failed to edit room" });
+    }
+  };
+  
   const getAllRooms = async (req, res) => {
     try {
       // Retrieve all room documents from MongoDB using the Room model
@@ -151,6 +182,7 @@ const removeItemFromRoom = async (req, res) => {
   
   return {
     createRoom,
+    editRoom,
     deleteRoom,
     getAllRooms,
     getRoomById,
