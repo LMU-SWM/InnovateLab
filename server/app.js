@@ -4,6 +4,7 @@ const calendarRoutes = require("./routes/calendarRoutes");
 const roomRoutes = require("./routes/roomRoutes");
 const availablityRoutes = require("./routes/availablityRoutes");
 const identityrRoutes = require("./routes/identityRoutes");
+const personalEventsRoutes = require("./routes/personalEventsRoutes");
 const cors = require("cors");
 
 const { MongoClient } = require("mongodb");
@@ -30,10 +31,12 @@ MongoClient.connect(connectionString, {
     const availablityController =
       require("./controllers/availablityController")(db);
     const identityController = require("./controllers/identityController")(db);
+    const personalEventsController = require("./controllers/personalEventsController")(db);
 
     // Register the event and calendar routes
     app.use("/availablity", availablityRoutes(availablityController));
     app.use("/events", eventRoutes(eventController));
+    app.use("/persoanlEvents", personalEventsRoutes(personalEventsController));
     app.use("/calendars", calendarRoutes(calendarController));
     app.use("/rooms", roomRoutes(roomController));
     app.use("/identity", identityrRoutes(identityController));

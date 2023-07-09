@@ -12,9 +12,11 @@ import {
   TableRow,
   Checkbox,
   Typography,
+  CircularProgress,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import createAuth0Client, { Auth0Client } from "@auth0/auth0-spa-js";
+import axios from "axios";
 
 function Profile(): JSX.Element {
   const { isAuthenticated, user, getIdTokenClaims } = useAuth0();
@@ -22,6 +24,8 @@ function Profile(): JSX.Element {
   const [calendars, setCalendars] = useState<any[]>([]);
   const [selectedCalendars, setSelectedCalendars] = useState<any[]>([]);
   const [events, setEvents] = useState<any[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitColor, setSubmitColor] = useState("primary");
 
   const fetchCalendars = async (accessToken: string) => {
     try {
@@ -128,14 +132,13 @@ function Profile(): JSX.Element {
   };
 
   const handleFormSubmit = async () => {
+    setIsSubmitting(true);
     const selectedCalendarEvents: any[] = [];
-    const googleToken : string = localStorage.getItem("GOOGLE_TOKEN")||"";
+    const googleToken: string = localStorage.getItem("GOOGLE_TOKEN") || "";
+
     for (const calendar of selectedCalendars) {
       try {
-        const events = await fetchEvents(
-          googleToken,
-          calendar.id
-        );
+        const events = await fetchEvents(googleToken, calendar.id);
         selectedCalendarEvents.push(...events);
       } catch (error) {
         console.error("Error fetching events:", error);
@@ -147,6 +150,21 @@ function Profile(): JSX.Element {
 
     const eventsJSON = JSON.stringify(selectedCalendarEvents);
     console.log("Events JSON:", eventsJSON);
+
+    try {
+      const response = await axios.post(
+        "http://localhost:3001/persoanlEvents",
+        {
+          events: selectedCalendarEvents,
+        }
+      );
+      console.log("Server response:", response.data);
+      setSubmitColor("success");
+    } catch (error) {
+      console.error("Error sending events to the server:", error);
+      setSubmitColor("error");
+    }
+    setIsSubmitting(false);
   };
 
   return (
@@ -185,43 +203,71 @@ function Profile(): JSX.Element {
 
       <section style={{ backgroundColor: "#f0f0f0", padding: "1rem" }}>
         <Typography variant="h6" align="center" gutterBottom>
-          Select the calendars you want us to use
+          Select your persoanl calendars to use:
         </Typography>
 
-        <TableContainer>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Calendar</TableCell>
-                <TableCell align="center">Select</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {calendars.map((calendar) => (
-                <TableRow key={calendar.id}>
-                  <TableCell component="th" scope="row">
-                    {calendar.summary}
-                  </TableCell>
-                  <TableCell align="center">
-                    <Checkbox
-                      checked={selectedCalendars.includes(calendar)}
-                      onChange={() => handleCalendarSelection(calendar)}
-                    />
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleFormSubmit}
-          style={{ marginTop: "1rem" }}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            position: "relative",
+          }}
         >
-          Submit
-        </Button>
+          <TableContainer style={{ width: "70%", border: "2px solid #fff" }}>
+            <Table>
+              <TableHead style={{ backgroundColor: "#b3e5fc" }}>
+                <TableRow>
+                  <TableCell>Calendar</TableCell>
+                  <TableCell align="center">Select</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {calendars.map((calendar, index) => (
+                  <TableRow
+                    key={calendar.id}
+                    style={{
+                      backgroundColor: index % 2 === 0 ? "#e1f5fe" : "#ffffff",
+                    }}
+                  >
+                    <TableCell component="th" scope="row">
+                      {calendar.summary}
+                    </TableCell>
+                    <TableCell align="center">
+                      <Checkbox
+                        checked={selectedCalendars.includes(calendar)}
+                        onChange={() => handleCalendarSelection(calendar)}
+                      />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <Button
+            variant="contained"
+            onClick={handleFormSubmit}
+            style={{
+              marginTop: "1rem",
+              position: "absolute",
+              bottom: "1rem",
+              right: "1rem",
+              backgroundColor:
+                submitColor === "success"
+                  ? "#4caf50"
+                  : submitColor === "error"
+                  ? "#f44336"
+                  : undefined,
+              color: "#ffffff",
+            }}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? (
+              <CircularProgress size={24} color="inherit" />
+            ) : (
+              "Submit"
+            )}
+          </Button>
+        </div>
       </section>
     </main>
   );
