@@ -8,7 +8,7 @@ function SignIn() {
   const handleLoginWithGoogle = () => {
     loginWithRedirect({
       connection: 'google-oauth2', // Specify the connection for Google login
-      scope: 'openid profile email https://www.googleapis.com/auth/calendar.readonly', // Specify the desired scopes for Google API access
+      scope: 'openid profile email https://www.googleapis.com/auth/calendar', // Specify the desired scopes for Google API access
     });
   };
 

@@ -3,6 +3,7 @@ const eventRoutes = require("./routes/eventRoutes");
 const calendarRoutes = require("./routes/calendarRoutes");
 const roomRoutes = require("./routes/roomRoutes");
 const availablityRoutes = require("./routes/availablityRoutes");
+const identityrRoutes = require("./routes/identityRoutes");
 const cors = require("cors");
 
 const { MongoClient } = require("mongodb");
@@ -28,12 +29,14 @@ MongoClient.connect(connectionString, {
     const roomController = require("./controllers/roomController")(db);
     const availablityController =
       require("./controllers/availablityController")(db);
+    const identityController = require("./controllers/identityController")(db);
 
     // Register the event and calendar routes
     app.use("/availablity", availablityRoutes(availablityController));
     app.use("/events", eventRoutes(eventController));
     app.use("/calendars", calendarRoutes(calendarController));
     app.use("/rooms", roomRoutes(roomController));
+    app.use("/identity", identityrRoutes(identityController));
 
     // Start the server
     app.listen(3001, () => {
