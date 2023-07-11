@@ -134,7 +134,7 @@ const UsageAnalyticsSection: React.FC<UsageAnalyticsSectionProps> = ({
           justifyContent: "space-between",
         }}
       >
-        <h2>Public Events</h2>
+        <h2>Analytics</h2>
         <div>
           <IconButton onClick={handlePreviousChart}>
             <NavigateBeforeIcon />

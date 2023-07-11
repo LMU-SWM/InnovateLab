@@ -2,6 +2,7 @@ const { google } = require("googleapis");
 const EventModel = require("../models/events"); // Assuming you have an Event model
 const mongoose = require('mongoose');
 const { v4: uuidv4 } = require('uuid');
+const { ConnectionClosedEvent } = require("mongodb");
 
 
 module.exports = (db) => {
@@ -128,6 +129,34 @@ module.exports = (db) => {
       res.status(500).json({ error: "Failed to get events" });
     }
   };
+
+  const getEventByCalId = async (req, res) => {
+    try {
+      console.log("Start getEventByCalId");
+      const { calendarId } = req.params; // Extract calendarId from query parameters
+      console.log("calendarId:", calendarId);
+      // Define the query. If a calendarId is provided, filter events by calendarId.
+      const query = {};
+      if (calendarId) {
+        query.calendarId = calendarId;
+      } else {
+        return res.status(400).json({ error: "calendarId parameter is required" });
+      }
+  
+      const eventCollection = db.collection("events");
+      const events = await eventCollection.find(query).toArray();
+  
+      if (events.length === 0) {
+        return res.status(404).json({ error: "Event not found" });
+      }
+      console.log("events:", events);
+      res.json(events);
+    } catch (error) {
+      console.error("Error getting events:", error);
+      res.status(500).json({ error: "Failed to get events" });
+    }
+  };
+  
 
   const modifyEvent = async (req, res) => {
     try {
@@ -261,6 +290,7 @@ module.exports = (db) => {
     createEvent,
     getEvents,
     getEventById,
+    getEventByCalId,
     deleteEvent,
     modifyEvent,
   };

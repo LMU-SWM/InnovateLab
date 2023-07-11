@@ -18,14 +18,31 @@ import { useEffect, useState } from "react";
 import createAuth0Client, { Auth0Client } from "@auth0/auth0-spa-js";
 import axios from "axios";
 
+interface EventData {
+  _id: string;
+  eventId: string;
+  owner: string;
+  team: string;
+  summary: string;
+  description: string;
+  location: string;
+  startDateTime: string;
+  endDateTime: string;
+  timeZone: string;
+  attendees: { email: string }[];
+  googleCalendarEventId: string;
+  calendarId: string;
+}
 function Profile(): JSX.Element {
   const { isAuthenticated, user, getIdTokenClaims } = useAuth0();
 
   const [calendars, setCalendars] = useState<any[]>([]);
   const [selectedCalendars, setSelectedCalendars] = useState<any[]>([]);
-  const [events, setEvents] = useState<any[]>([]);
+  const [events, setEvents] = useState<EventData[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitColor, setSubmitColor] = useState("primary");
+
+
 
   const fetchCalendars = async (accessToken: string) => {
     try {
@@ -78,11 +95,13 @@ function Profile(): JSX.Element {
         if (idTokenClaims && idTokenClaims.__raw) {
           const userAuth0Token = idTokenClaims.__raw;
           localStorage.setItem("USER_AUTH0_TOKEN", userAuth0Token);
+         
           console.log("User token stored:", userAuth0Token);
           // Decode the USER_AUTH0_TOKEN to access the payload
           const tokenPayload = JSON.parse(atob(userAuth0Token.split(".")[1]));
           // Access the userID from the token payload
           const userId = tokenPayload.sub;
+          localStorage.setItem("USER_IL", userId);
           // Use the userId as needed
           console.log("userID", userId);
           // Call the IdentityController's get route to fetch the data
@@ -133,12 +152,19 @@ function Profile(): JSX.Element {
 
   const handleFormSubmit = async () => {
     setIsSubmitting(true);
-    const selectedCalendarEvents: any[] = [];
+    const selectedCalendarEvents: EventData[] = [];
     const googleToken: string = localStorage.getItem("GOOGLE_TOKEN") || "";
+    const userToken: string = localStorage.getItem("USER_IL") || "";
 
     for (const calendar of selectedCalendars) {
       try {
         const events = await fetchEvents(googleToken, calendar.id);
+        const updatedCalendars = selectedCalendarEvents.map((events) => {
+          return {
+            ...events,
+            owner: userToken,
+          };
+        });
         selectedCalendarEvents.push(...events);
       } catch (error) {
         console.error("Error fetching events:", error);
@@ -156,6 +182,7 @@ function Profile(): JSX.Element {
         "http://localhost:3001/persoanlEvents",
         {
           events: selectedCalendarEvents,
+          owner: userToken,
         }
       );
       console.log("Server response:", response.data);
