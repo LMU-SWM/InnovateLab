@@ -101,7 +101,7 @@ function Profile(): JSX.Element {
           const tokenPayload = JSON.parse(atob(userAuth0Token.split(".")[1]));
           // Access the userID from the token payload
           const userId = tokenPayload.sub;
-          localStorage.setItem("USER_IL", userId);
+          localStorage.setItem("USER_IL", user?.email||"");
           // Use the userId as needed
           console.log("userID", userId);
           // Call the IdentityController's get route to fetch the data

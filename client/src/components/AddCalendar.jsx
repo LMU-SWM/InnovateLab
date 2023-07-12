@@ -6,6 +6,20 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import googleCalendarPlugin from "@fullcalendar/google-calendar";
 import EventPopup from "./EventPopup";
+import { getRandomColor, getContrastText } from "../utils/utils";
+import {
+  Modal,
+  Box,
+  Typography,
+  TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Checkbox,
+  FormControlLabel,
+  Button,
+} from "@mui/material";
 
 export default function AddCalendar() {
   const [showModal, setShowModal] = useState(false);
@@ -18,6 +32,8 @@ export default function AddCalendar() {
   const [selectedCalendar, setSelectedCalendar] = useState("");
   const [roomEvents, setRoomEvents] = useState([]);
   const [fcRoomEvents, setFcRoomEvents] = useState([]);
+  const [attendees, setAttendees] = useState([]);
+  const [newAttendee, setNewAttendee] = useState("");
 
   const serverURL = process.env.REACT_APP_SERVER_URL;
   const serverURL_personalEvents = serverURL + "persoanlEvents";
@@ -25,6 +41,11 @@ export default function AddCalendar() {
   const serverURL_calendars = serverURL + "calendars";
   const serverURL_rooms = serverURL + "rooms";
   const serverURL_availablity = serverURL + "availablity";
+  const [zoomedInDate, setZoomedInDate] = useState(null);
+  const [selectedDateTime, setSelectedDateTime] = useState(null);
+  const [endDateTime, setEndDateTime] = useState(null);
+  const [bgColor, setBgColor] = useState({});
+  const [txtColor, setTxtColor] = useState({});
 
   const authToken = "";
 
@@ -45,29 +66,66 @@ export default function AddCalendar() {
     }
   };
 
-  const handleDateClick = (info) => {
-    setShowModal(true);
-    setEventDataN({
-      start: info.dateStr,
-      end: info.dateStr,
+  const updateTxtColor = (name, color) => {
+    setTxtColor((prevColors) => ({
+      ...prevColors,
+      [name]: color,
+    }));
+  };
+  
+
+  const createDummyEvent = (date) => {
+    const calendarApi = calendarRef.current.getApi();
+    calendarApi.addEvent({
+      title: "Your New Event",
+      start: selectedDateTime,
+      end: endDateTime,
+      allDay: false,
+      editable: true,
+      durationEditable: true,
+      backgroundColor: "green",
+      borderColor: "dark green",
+      extendedProps: {
+        isDummyEvent: true,
+      },
     });
-    setLoading(true);
-    calendarRef.current.getApi().refetchEvents();
-    setLoading(false);
+  };
+
+  const handleDateClick = (arg) => {
+    if (calendarRef.current.getApi().view.type === "timeGridDay") {
+      setSelectedDateTime(arg.date);
+      const endDate = new Date(arg.date.getTime() + 30 * 60000);
+      setEndDateTime(endDate);
+      createDummyEvent(arg.date, endDate);
+    } else {
+      calendarRef.current.getApi().changeView("timeGridDay", arg.date);
+    }
   };
 
   const handleEventClick = (info) => {
-    // Prevent redirect to Google Calendar
-    info.jsEvent.cancelBubble = true;
-    info.jsEvent.preventDefault();
-    console.log(info);
-    setShowModal(true);
-    setEventDataN({
-      id: info.event.id,
-      title: info.event.title,
-      start: info.event.start,
-      end: info.event.end,
-    });
+    const event = info.event;
+    if (event.extendedProps.isDummyEvent) {
+      info.jsEvent.cancelBubble = true;
+      info.jsEvent.preventDefault();
+      console.log("Event:", info.event);
+      setShowModal(true);
+      setEventDataN({
+        id: info.event.id,
+        title: info.event._def.title,
+        start: info.event._instance.range.start.toISOString().slice(0, -8),
+        end: info.event._instance.range.end.toISOString().slice(0, -8),
+        location: selectedRoom,
+        roomOptions: roomOptions,
+        description: "SWM Innovation lab",
+        publicEvent: false,
+        capacity: "",
+        attendees: attendees,
+      });
+      console.log("Open event popup for dummy event");
+    } else {
+      // Show alert for other events
+      alert("This event cannot be modified. Try the manage booking page.");
+    }
   };
 
   const handleEventChange = (newData) => {
@@ -184,6 +242,39 @@ export default function AddCalendar() {
       });
   };
 
+  const handleChangeAttendee = (event) => {
+    const value = event.target.value;
+    const lastCharacter = value.slice(-1); // Get the last character of the value
+
+    // Check if the last character matches the regular expression
+    if (lastCharacter.match(/[, ]+/)) {
+      const emails = value.split(/[, ]+/);
+      setAttendees(emails);
+    }
+  };
+
+  const handleAddAttendee = (e) => {
+    e.preventDefault();
+    if (newAttendee.trim() !== "") {
+      setAttendees((prevAttendees) => [...prevAttendees, newAttendee]);
+      setNewAttendee("");
+      updateTxtColor(newAttendee,getRandomColor);
+    }
+  };
+
+  const handleDeleteAttendee = (index) => {
+    // setAttendees((prevAttendees) =>
+    //   prevAttendees.filter((_, i) => i !== index)
+    // );
+    setAttendees((prevAttendees) => {
+      const updatedAttendees = [...prevAttendees];
+      const deletedAttendee = updatedAttendees[index];
+      delete txtColor[deletedAttendee.name];
+      return updatedAttendees.filter((_, i) => i !== index);
+    });
+    setTxtColor((prevColors) => ({ ...prevColors }));
+  };
+
   useEffect(() => {
     // Refresh events every 10 seconds
     const interval = setInterval(() => {
@@ -220,6 +311,7 @@ export default function AddCalendar() {
         const response = await fetch(
           serverURL_events + "/calendar/" + encodedCalendar
         );
+        if (response.ok) {
         const eventsData = await response.json();
 
         const formattedEvents = eventsData.map((event) => ({
@@ -235,6 +327,11 @@ export default function AddCalendar() {
 
         // Set the events state
         setRoomEvents(formattedEvents);
+      }
+      else{
+        console.log("Error fetching events");
+        setRoomEvents([]);
+      }
       } catch (error) {
         console.error("Failed to fetch events:", error);
       }
@@ -244,38 +341,90 @@ export default function AddCalendar() {
   }, [selectedCalendar]);
 
   useEffect(() => {
+    const owner = localStorage.getItem("USER_IL") || "";
+    const newAttendee = owner;
     const fetchPersonalEvents = async () => {
       try {
         setFcRoomEvents([]);
-        // Fetch events from the server
-        const owner = localStorage.getItem("USER_IL") || "";
-        const encodedOwner = encodeURIComponent(owner);
-        console.log("URL:", serverURL_personalEvents + "/" + encodedOwner);
-        const response = await fetch(
-          serverURL_personalEvents + "/" + encodedOwner
-        );
-        const eventsData = await response.json();
+        const requests = attendees.map(async (owner) => {
+          const encodedOwner = encodeURIComponent(owner);
+          const response = await fetch(
+            serverURL_personalEvents + "/" + encodedOwner
+          );
+          if (response.ok) {
+            const eventsData = await response.json();
+            const bgColor = getRandomColor();
+            const textC = getContrastText(bgColor);
+            const formattedEvents = eventsData.map((event) => ({
+              id: event.eventId,
+              title: event.summary,
+              start: event.startDateTime,
+              end: event.endDateTime,
+              backgroundColor: bgColor,
+              borderColor: bgColor,
+              textColor: textC,
+            }));
+            document.getElementById(owner+"btn").style.color = bgColor;
+            return formattedEvents;
+          } else {
+            return [];
+          }
+        });
+        const eventsByOwner = await Promise.all(requests);
+        const mergedEvents = eventsByOwner.flat();
+        setFcRoomEvents(mergedEvents);
+      } catch (error) {
+        console.error("Failed to fetch events:", error);
+      }
+    };
+    if (!attendees.includes(newAttendee)) {
+      setAttendees((prevAttendees) => [...prevAttendees, newAttendee]);
+    }
+    else{
+      console.log("Already added");
+      fetchPersonalEvents();
+    }
+  }, [selectedCalendar]);
 
-        const formattedEvents = eventsData.map((event) => ({
-          id: event.eventId,
-          title: event.summary,
-          start: event.startDateTime, // Assuming your event object has a 'startDateTime' property
-          end: event.endDateTime, // Assuming your event object has an 'endDateTime' property
-          backgroundColor: "red", // Optional: Customize background color if needed
-          borderColor: "red", // Optional: Customize border color if needed
-          textColor: "white", // Optional: Customize text color if needed
-          // Additional properties as needed
-        }));
-
-        // Set the events state
-        setFcRoomEvents(formattedEvents);
+  useEffect(() => {
+    console.log("attendees:", attendees);
+    const fetchPersonalEvents = async () => {
+      try {
+        setFcRoomEvents([]);
+        const requests = attendees.map(async (owner) => {
+          const encodedOwner = encodeURIComponent(owner);
+          const response = await fetch(
+            serverURL_personalEvents + "/" + encodedOwner
+          );
+          if (response.ok) {
+            const eventsData = await response.json();
+            const bgColor = getRandomColor();
+            const textC = getContrastText(bgColor);
+            const formattedEvents = eventsData.map((event) => ({
+              id: event.eventId,
+              title: event.summary,
+              start: event.startDateTime,
+              end: event.endDateTime,
+              backgroundColor: bgColor,
+              borderColor: bgColor,
+              textColor: textC,
+            }));
+            document.getElementById(owner+"btn").style.color = bgColor;
+            return formattedEvents;
+          } else {
+            return [];
+          }
+        });
+        const eventsByOwner = await Promise.all(requests);
+        const mergedEvents = eventsByOwner.flat();
+        setFcRoomEvents(mergedEvents);
       } catch (error) {
         console.error("Failed to fetch events:", error);
       }
     };
 
     fetchPersonalEvents();
-  }, [selectedCalendar]);
+  }, [attendees]);
 
   useEffect(() => {}, []);
 
@@ -284,24 +433,80 @@ export default function AddCalendar() {
   }, [roomEvents]);
 
   useEffect(() => {
+    console.log("eventDataN:", eventDataN);
+  }, [eventDataN]);
+
+  useEffect(() => {
     console.log("fcRoomEvents:", fcRoomEvents);
   }, [fcRoomEvents]);
 
   return (
     <div className="calendar">
-      {/* Render the selectors with options */}
-      <div>
-        <label htmlFor="room">Room:</label>
-        <select id="room" value={selectedRoom} onChange={handleRoomChange}>
-          <option value="">Select Room</option>
-          {roomOptions.map((room, index) => (
-            <option key={index} value={room.name}>
-              {room.name}
-            </option>
-          ))}
-        </select>
+      <FormControl fullWidth sx={{ mb: 2 }}>
+        <InputLabel shrink={true}sx={{ position: 'static' }}>Select your Location</InputLabel>
+        <Select value={selectedRoom} onChange={handleRoomChange}>
+          {roomOptions && Array.isArray(roomOptions) ? (
+            roomOptions.map((room, index) => (
+              <MenuItem key={index} value={room.name}>
+                {room.name}
+              </MenuItem>
+            ))
+          ) : (
+            <MenuItem value="">No options available</MenuItem>
+          )}
+        </Select>
+      </FormControl>
 
+      <div
+        style={{
+          border: "1px solid black",
+          padding: "10px",
+          display: "flex",
+          alignItems: "center",
+          flexWrap: "wrap", // Added flexWrap property
+        }}
+      >
+        <form onSubmit={handleAddAttendee} style={{ marginRight: "10px" }}>
+          <input
+            type="text"
+            value={newAttendee}
+            onChange={(e) => setNewAttendee(e.target.value)}
+            placeholder="Attendee"
+          />
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            sx={{ borderRadius: "50px" }}
+          >
+            Add
+          </Button>
+        </form>
+        <ul
+          style={{
+            listStyle: "none",
+            margin: 0,
+            padding: 0,
+            display: "flex",
+            flexWrap: "wrap", // Added flexWrap property
+          }}
+        >
+          {attendees.map((attendee, index) => (
+            <li key={index} style={{ marginRight: "10px" }}>
+              <Button
+                id={attendee+"btn"}
+                variant="outlined"
+                color="secondary"
+                onClick={() => handleDeleteAttendee(index)}
+                sx={{ borderRadius: "50px" }}
+              >
+                {attendee}
+              </Button>
+            </li>
+          ))}
+        </ul>
       </div>
+
       <EventPopup
         isOpen={showModal}
         eventData={eventDataN}
@@ -320,7 +525,7 @@ export default function AddCalendar() {
           interactionPlugin,
           googleCalendarPlugin,
         ]}
-        initialView="dayGridMonth"
+        initialView={zoomedInDate ? "timeGridDay" : "dayGridMonth"}
         headerToolbar={{
           left: "prev,next today",
           center: "title",
