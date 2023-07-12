@@ -9,6 +9,7 @@ module.exports = (db) => {
       //  Delete existing events in the "personalevents" cluster
       //  await EventModel.deleteMany({});
       //  await eventCollection.deleteMany({});
+      await eventCollection.deleteMany({ owner: owner });
 
       //console.log("Events:", events);
       const storedEvents = [];
