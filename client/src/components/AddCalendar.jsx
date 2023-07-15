@@ -72,7 +72,6 @@ export default function AddCalendar() {
       [name]: color,
     }));
   };
-  
 
   const createDummyEvent = (date) => {
     const calendarApi = calendarRef.current.getApi();
@@ -132,45 +131,111 @@ export default function AddCalendar() {
     setEventDataN(newData);
   };
 
+  // Function to send the email
+  const sendEmail = async (link) => {
+    const eventTitle = eventDataN.title;
+    const eventDescription = eventDataN.description;
+    const eventStartTime = eventDataN.start;
+    const eventEndTime = eventDataN.end;
+    const eventLocation = eventDataN.location;
+    const attendees = eventDataN.attendees;
+    const attendeeList = attendees.join(", ");
+    const owner = localStorage.getItem("USER_IL");
+
+    const emailBody = `
+    Dear Attendee,
+
+    You are cordially invited to attend the following event:
+
+    Title: ${eventTitle}
+    Description: ${eventDescription}
+    Start Time: ${eventStartTime}
+    End Time: ${eventEndTime}
+    Location: ${eventLocation}
+    Attendees: ${attendeeList}
+
+    This event is a great opportunity for us to discuss and collaborate. 
+    Your presence would be highly appreciated.
+
+    Save meeting: ${link}
+
+    Please do not hesitate to contact us if you require any further information. 
+
+    We look forward to seeing you.
+
+    Best regards,
+
+    ${owner}
+    SWM Innovation Lab
+    `;
+
+    console.log(emailBody);
+
+    const subject = "Meeting Invitation";
+    const emailTo = "joshysujay@gmail.com";
+    const emailFrom = owner;
+    const accessToken = localStorage.getItem("GOOGLE_TOKEN");
+
+    let email = [
+      "To: " + emailTo,
+      "From: " + emailFrom,
+      "Subject: " + subject,
+      "",
+      emailBody,
+    ].join("\r\n");
+
+    // The body needs to be base64url encoded.
+    const encodedEmail = btoa(email).replace(/\+/g, "-").replace(/\//g, "_");
+    axios({
+      method: "post",
+      url: "https://www.googleapis.com/gmail/v1/users/me/messages/send",
+      headers: {
+        Authorization: "Bearer " + accessToken,
+        "Content-Type": "application/json",
+      },
+      data: {
+        raw: encodedEmail,
+      },
+    })
+      .then((response) => {
+        console.log("Email sent");
+      })
+      .catch((error) => {
+        console.log("Error sending email");
+        console.log(error);
+      });
+  };
+
   const handleSaveEvent = async () => {
     try {
       const newEvent = {
-        summary: eventDataN.summary,
+        owner: localStorage.getItem("USER_IL") || "",
+        team: "dev",
+        calendarId: eventDataN.calendar,
+        summary: eventDataN.title,
+        description: eventDataN.description,
         location: eventDataN.location,
-        start: {
-          dateTime:
-            eventDataN.start.length < 20
-              ? `${eventDataN.start}T10:00:00`
-              : eventDataN.start, // Add a default time of 10:00:00 if no time is provided,
-          timeZone: "Europe/Berlin",
-        },
-        end: {
-          dateTime:
-            eventDataN.end.length < 20
-              ? `${eventDataN.end}T17:00:00`
-              : eventDataN.end, // Add a default time of 17:00:00 if no time is provided
-          timeZone: "Europe/Berlin",
-        },
+        startDateTime: eventDataN.start,
+        endDateTime: eventDataN.end,
+        timeZone: "UTC",
+        attendees: eventDataN.attendees,
+        useDefaultReminders: true,
       };
 
       // Your code to add the event to Google Calendar...
       console.log(newEvent);
       const response = await axios({
         method: "post",
-        url: `https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events`,
+        url: `http://localhost:3001/events/`,
 
         headers: {
-          Authorization: `Bearer ${authToken}`,
           "Content-Type": "application/json",
         },
         data: newEvent,
       });
 
       if (response.status === 200) {
-        console.log("Event added to Google Calendar");
-        setLoading(true);
-        calendarRef.current.getApi().refetchEvents();
-        setLoading(false);
+        await sendEmail(response.data.event.htmlLink);        
       } else {
         console.error(
           "Error adding event to Google Calendar:",
@@ -258,7 +323,7 @@ export default function AddCalendar() {
     if (newAttendee.trim() !== "") {
       setAttendees((prevAttendees) => [...prevAttendees, newAttendee]);
       setNewAttendee("");
-      updateTxtColor(newAttendee,getRandomColor);
+      updateTxtColor(newAttendee, getRandomColor);
     }
   };
 
@@ -312,26 +377,25 @@ export default function AddCalendar() {
           serverURL_events + "/calendar/" + encodedCalendar
         );
         if (response.ok) {
-        const eventsData = await response.json();
+          const eventsData = await response.json();
 
-        const formattedEvents = eventsData.map((event) => ({
-          id: event.eventId,
-          title: event.summary,
-          start: event.startDateTime, // Assuming your event object has a 'startDateTime' property
-          end: event.endDateTime, // Assuming your event object has an 'endDateTime' property
-          backgroundColor: "blue", // Optional: Customize background color if needed
-          borderColor: "blue", // Optional: Customize border color if needed
-          textColor: "white", // Optional: Customize text color if needed
-          // Additional properties as needed
-        }));
+          const formattedEvents = eventsData.map((event) => ({
+            id: event.eventId,
+            title: event.summary,
+            start: event.startDateTime, // Assuming your event object has a 'startDateTime' property
+            end: event.endDateTime, // Assuming your event object has an 'endDateTime' property
+            backgroundColor: "blue", // Optional: Customize background color if needed
+            borderColor: "blue", // Optional: Customize border color if needed
+            textColor: "white", // Optional: Customize text color if needed
+            // Additional properties as needed
+          }));
 
-        // Set the events state
-        setRoomEvents(formattedEvents);
-      }
-      else{
-        console.log("Error fetching events");
-        setRoomEvents([]);
-      }
+          // Set the events state
+          setRoomEvents(formattedEvents);
+        } else {
+          console.log("Error fetching events");
+          setRoomEvents([]);
+        }
       } catch (error) {
         console.error("Failed to fetch events:", error);
       }
@@ -364,7 +428,7 @@ export default function AddCalendar() {
               borderColor: bgColor,
               textColor: textC,
             }));
-            document.getElementById(owner+"btn").style.color = bgColor;
+            document.getElementById(owner + "btn").style.color = bgColor;
             return formattedEvents;
           } else {
             return [];
@@ -379,8 +443,7 @@ export default function AddCalendar() {
     };
     if (!attendees.includes(newAttendee)) {
       setAttendees((prevAttendees) => [...prevAttendees, newAttendee]);
-    }
-    else{
+    } else {
       console.log("Already added");
       fetchPersonalEvents();
     }
@@ -409,7 +472,7 @@ export default function AddCalendar() {
               borderColor: bgColor,
               textColor: textC,
             }));
-            document.getElementById(owner+"btn").style.color = bgColor;
+            document.getElementById(owner + "btn").style.color = bgColor;
             return formattedEvents;
           } else {
             return [];
@@ -443,7 +506,9 @@ export default function AddCalendar() {
   return (
     <div className="calendar">
       <FormControl fullWidth sx={{ mb: 2 }}>
-        <InputLabel shrink={true}sx={{ position: 'static' }}>Select your Location</InputLabel>
+        <InputLabel shrink={true} sx={{ position: "static" }}>
+          Select your Location
+        </InputLabel>
         <Select value={selectedRoom} onChange={handleRoomChange}>
           {roomOptions && Array.isArray(roomOptions) ? (
             roomOptions.map((room, index) => (
@@ -494,7 +559,7 @@ export default function AddCalendar() {
           {attendees.map((attendee, index) => (
             <li key={index} style={{ marginRight: "10px" }}>
               <Button
-                id={attendee+"btn"}
+                id={attendee + "btn"}
                 variant="outlined"
                 color="secondary"
                 onClick={() => handleDeleteAttendee(index)}
@@ -534,6 +599,7 @@ export default function AddCalendar() {
         dateClick={handleDateClick}
         eventClick={handleEventClick}
         events={[...roomEvents, ...fcRoomEvents]}
+        timeZone="UTC"
       />
     </div>
   );

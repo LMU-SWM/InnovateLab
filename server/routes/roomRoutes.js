@@ -11,6 +11,10 @@ module.exports = (roomController) => {
   router.delete("/:roomId", roomController.deleteRoom);
   // Get all rooms
   router.get("/", roomController.getAllRooms);
+  // Get all tools available
+  router.get("/tools/list", roomController.getAllTools);
+  // Get room by tools
+  router.get("/roomWithTools/list", roomController.getRoomsWithSpecificTools);
   // Get room by ID
   router.get("/:roomId", roomController.getRoomById);
   

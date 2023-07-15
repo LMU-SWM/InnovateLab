@@ -75,7 +75,7 @@ module.exports = (db) => {
       if (events.length === 0) {
         return res.status(404).json({ error: "Event not found" });
       }
-      console.log("events:", events);
+      //console.log("events:", events);
       res.json(events);
     } catch (error) {
       console.error("Error storing events:", error);

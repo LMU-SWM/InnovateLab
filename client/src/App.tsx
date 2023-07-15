@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from 'react';
 import {
   BrowserRouter,
   Link as RouterLink,
@@ -39,6 +39,7 @@ function App() {
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
   };
+
 
   return (
     <Container maxWidth="xl" sx={{ p: "0px !important" }}>

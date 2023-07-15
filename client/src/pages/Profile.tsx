@@ -102,6 +102,7 @@ function Profile(): JSX.Element {
           // Access the userID from the token payload
           const userId = tokenPayload.sub;
           localStorage.setItem("USER_IL", user?.email||"");
+          localStorage.setItem("USER_ID", tokenPayload.sub);
           // Use the userId as needed
           console.log("userID", userId);
           // Call the IdentityController's get route to fetch the data
@@ -117,7 +118,7 @@ function Profile(): JSX.Element {
 
           // Parse the response JSON
           const data = await response.json();
-          console.log("GOOGLE:", data.googleCalendarAccessToken);
+          console.log("GOOGLE:", data);
           localStorage.setItem("GOOGLE_TOKEN", data.googleCalendarAccessToken);
           try {
             const googleCalendars = await fetchCalendars(
@@ -172,7 +173,7 @@ function Profile(): JSX.Element {
     }
 
     console.log("Selected Calendars:", selectedCalendars);
-    console.log("Events:", selectedCalendarEvents);
+    //console.log("Events:", selectedCalendarEvents);
 
     const eventsJSON = JSON.stringify(selectedCalendarEvents);
     console.log("Events JSON:", eventsJSON);

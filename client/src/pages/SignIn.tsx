@@ -9,6 +9,7 @@ function SignIn() {
     loginWithRedirect({
       connection: 'google-oauth2', // Specify the connection for Google login
       scope: 'openid email profile https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/gmail.send', // Specify the desired scopes for Google API access
+      connection_scope: 'openid email profile https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/gmail.send', // Specify the desired scopes for Google API access
     });
   };
 

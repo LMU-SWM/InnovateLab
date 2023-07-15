@@ -57,7 +57,7 @@ module.exports = (db) => {
       const managementAccessToken = await getManagementAPIToken();
       const userId = req.params.userId;
       const userProfile = await getUserProfile(managementAccessToken, userId);
-      console.log(userProfile);
+      console.log("USR:", userProfile);
       const googleCalendarAccessToken = extractIdPAccessToken(
         userProfile,
         "google-oauth2"

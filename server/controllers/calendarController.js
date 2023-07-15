@@ -96,6 +96,7 @@ module.exports = (db) => {
 
   const getCalendarIdBySummary = async (req, res) => {
     try {
+      console.log("Start getCalendarIdBySummary")
       const summary = req.query.summary; // Get the summary from the query parameter
   
       const calendarsCollection = db.collection('calendars');
@@ -105,7 +106,7 @@ module.exports = (db) => {
         res.status(404).json({ error: 'Calendar not found' });
         return;
       }
-  
+      console.log("End getCalendarIdBySummary:",calendar.id )
       res.json({ id: calendar.id });
     } catch (error) {
       console.error('Error retrieving calendar ID:', error);
