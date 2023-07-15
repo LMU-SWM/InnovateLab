@@ -3,7 +3,6 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Check
 import FilterRoom from "./FilterRoom.jsx";
 import FilterBookingType from "./FilterBookingType.jsx";
 import ButtonContainer from "./ButtonContainer.jsx";
-import FilterCreator from "./FilterCreator.jsx";
 import CreateMeetingPopup from "./PopUp";
 import axios from "axios";
 
@@ -156,9 +155,6 @@ export default function BookingList() {
                     </div>
                     <div style={{ marginBottom: '40px' }}>
                         <FilterBookingType />
-                    </div>
-                    <div>
-                        <FilterCreator/>
                     </div>
                 </div>
             </div>
