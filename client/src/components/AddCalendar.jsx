@@ -172,7 +172,7 @@ export default function AddCalendar() {
     console.log(emailBody);
 
     const subject = "Meeting Invitation";
-    const emailTo = "joshysujay@gmail.com";
+    const emailTo = attendeeList;
     const emailFrom = owner;
     const accessToken = localStorage.getItem("GOOGLE_TOKEN");
 
