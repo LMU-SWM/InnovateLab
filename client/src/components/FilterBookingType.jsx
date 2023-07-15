@@ -37,7 +37,13 @@ export default function FilterBookingType() {
         ];
 
     return (
-        <div style={{ border: '0.5px solid black', padding: '10px', width: '20vw' }}>
+        <div style={{
+            border: '0.5px solid black',
+            padding: '10px',
+            width: '20vw',
+            borderRadius: '10px'
+        }}
+        >
             <Typography  variant="body2" style={{ fontWeight: 'bold', fontSize: '14px' }}>
                 Bookings
             </Typography>

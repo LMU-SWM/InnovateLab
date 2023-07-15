@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import './PopUp.css';
+import Button from '@mui/material/Button';
 
 class CreateMeetingPopup extends Component {
     constructor(props) {
@@ -131,13 +132,13 @@ class CreateMeetingPopup extends Component {
                                     onChange={this.handleEndTimeChange}
                                 />
                             </div>
-                            <div className="button-group">
-                                <button className="save-button" onClick={this.handleSubmit}>
-                                    Save
-                                </button>
-                                <button className="cancel-button" onClick={this.props.onClose}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <Button className="cancel-button" variant="contained" color="secondary" onClick={this.handleSubmit}>
                                     Cancel
-                                </button>
+                                </Button>
+                                <Button className="save-button" variant="contained" onClick={this.props.onClose}>
+                                    Save
+                                </Button>
                             </div>
                         </div>
                     </div>
