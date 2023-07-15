@@ -82,9 +82,10 @@ export default function BookingList() {
     }
 
     const fetchBookingList = async () => {
+        const owner = localStorage.getItem("USER_IL");
         const response = await axios({
             method: "GET",
-            url: `https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events?key=${apiKey}`
+            url: `http://localhost:3000/events?owner=${owner}}`
         });
         return response.data.items;
     };

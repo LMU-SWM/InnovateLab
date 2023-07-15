@@ -87,6 +87,70 @@ module.exports = (db) => {
     }
   };
 
+  const moveToPublic = async (req, res) => {
+    try {
+      const uuid_eventId = uuidv4();
+      const event = {
+        eventId: uuid_eventId,
+        owner: ADMIN,
+        ownerEmail: ADMIN,
+        team: req.body.team,
+        summary: req.body.summary || "",
+        description: req.body.description || "",
+        image: req.body.image || "",
+        location: req.body.location || "",
+        start: {
+          dateTime: req.body.startDateTime || "",
+          timeZone: req.body.timeZone || "",
+        },
+        end: {
+          dateTime: req.body.endDateTime || "",
+          timeZone: req.body.timeZone || "",
+        },
+      };
+
+      // Create a new collection named "PublicEvents" and insert the event there
+      const publicEventCollection = db.collection("PublicEvents");
+      await publicEventCollection.insertOne(event);
+
+      res.json(events);
+    } catch (error) {
+      console.error("Error getting events:", error);
+      res.status(500).json({ error: "Failed to get events" });
+    }
+  };
+
+  const deleteFromPublic = async (req, res) => {
+    try {
+      const eventId = req.params.eventId; // Extract the eventId from the request parameters
+  
+      // Delete the event from the "PublicEvents" collection based on the eventId
+      const publicEventCollection = db.collection("PublicEvents");
+      const result = await publicEventCollection.deleteOne({ eventId });
+  
+      if (result.deletedCount === 0) {
+        return res.status(404).json({ error: "Event not found" });
+      }
+  
+      res.json({ message: "Event deleted from PublicEvents collection" });
+    } catch (error) {
+      console.error("Error deleting event from PublicEvents:", error);
+      res.status(500).json({ error: "Failed to delete event from PublicEvents" });
+    }
+  };
+  
+  const getFromPublic = async (req, res) => {
+    try {
+      // Find the event from the "PublicEvents" collection based on the eventId
+      const publicEventCollection = db.collection("PublicEvents");
+      const events = await eventCollection.toArray()
+      res.json(events);
+    } catch (error) {
+      console.error("Error getting event from PublicEvents:", error);
+      res.status(500).json({ error: "Failed to get event from PublicEvents" });
+    }
+  };
+
   const getEvents = async (req, res) => {
     try {
       const { owner } = req.query; // Extract owner from query parameters
@@ -545,5 +609,8 @@ module.exports = (db) => {
     deleteEvent,
     modifyEvent,
     assist,
+    moveToPublic,
+    deleteFromPublic,
+    getFromPublic,
   };
 };

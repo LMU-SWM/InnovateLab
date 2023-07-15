@@ -21,6 +21,7 @@ import SignIn from "./pages/SignIn";
 import NewBookingPage from "./pages/NewBookingPage";
 import ManageBookingPage from "./pages/ManageBookingPage";
 import AdminPage from "./pages/AdminPage";
+import PublicEventsPage from "./pages/PublicEventsPage";
 import Layout from "./layouts/BaseLayout";
 import Logo from "./images/logo.svg";
 import "./App.css";
@@ -222,6 +223,7 @@ function App() {
           <Route path="/new-booking" element={<NewBookingPage />} />
           <Route path="/manage-booking" element={<ManageBookingPage />} />
           <Route path="/adminPage" element={<AdminPage />} />
+          <Route path="/publicEventsPage" element={<PublicEventsPage />} />
           <Route path="*" element={<SignIn />} />
           </Route>
         </Routes>

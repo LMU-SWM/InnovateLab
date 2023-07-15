@@ -343,6 +343,34 @@ function EventPopup({
       console.error('Error:', error);
     }
   };
+
+  const onManualBook = async (index) => {
+    try {
+      const calendarResponse = await fetch(`http://localhost:3001/calendars/id?summary=${encodeURIComponent(availableTimeSlots[index].room)}`);
+      if (!calendarResponse.ok) {
+        console.log("Response not okay");
+        throw new Error('Network response was not ok');
+      }
+      const calendarData = await calendarResponse.json();
+      
+      if (!calendarData.id || !availableTimeSlots[index]) {
+        throw new Error('Invalid data received');
+      }
+      
+      eventData.calendar = calendarData.id;
+      eventData.title = eventData.title + "[A]";
+      eventData.end = availableTimeSlots[index].end;
+      eventData.start = availableTimeSlots[index].start;
+      eventData.location = availableTimeSlots[index].room;
+  
+      // assuming onChange is a synchronous function
+      // if it's not, you might want to use await onChange({ ...eventData });
+      onChange({ ...eventData });
+      onSave();
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
   
   return (
     <Modal open={isOpen} onClose={onCancel}>
