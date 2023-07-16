@@ -29,7 +29,7 @@ export default function BookingList() {
   const [page, setPage] = useState(1);
   const [items, setItems] = useState([]);
   const [selectedMeeting, setSelectedMeeting] = useState(null);
-  const itemsPerPage = 5;
+  const itemsPerPage = 9;
   const [events, setEvents] = useState([]);
   const [selectedRooms, setSelectedRooms] = useState([]);
   const [selectedBookingTypes, setSelectedBookingTypes] = useState([]);
