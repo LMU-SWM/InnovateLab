@@ -60,42 +60,36 @@ class CreateMeetingPopup extends Component {
 
   handleSubmit = () => {
     const { title, location, startTime, endTime } = this.state;
-    const { eventId, calendarId, accessToken } = this.props;
-
+    const { eventId, calendarId } = this.props;
+  
     const eventData = {
+      user: localStorage.getItem("USER_IL"),
       summary: title,
       location: location,
-      start: {
-        dateTime: startTime,
-      },
-      end: {
-        dateTime: endTime,
-      },
+      startDateTime: startTime,
+      endDateTime: endTime,
     };
-
-    axios
-      .patch(
-        `https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events/${eventId}`,
-        eventData,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-        }
-      )
-      .then((response) => {
-        console.log("Meeting edited:", response.data);
-        this.props.onUpdate(response.data);
+  
+    fetch(`http://localhost:3001/events/${eventId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(eventData),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log('Meeting edited:', data);
+        this.props.onUpdate(data);
         this.props.onClose();
       })
       .catch((error) => {
-        console.log("Error updating meeting:", error);
+        console.log('Error updating meeting:', error);
       });
-
+  
     this.props.onClose();
   };
+  
 
   handleSendEmail = () => {
     this.props.onSendEmail(this.props.eventId);
@@ -153,6 +147,9 @@ class CreateMeetingPopup extends Component {
         <DialogActions>
           <Button onClick={this.props.onClose} color="primary">
             Cancel
+          </Button>
+          <Button onClick={this.handleSubmit} color="secondary">
+            Save
           </Button>
           <Button onClick={this.handleSendEmail} color="secondary">
             Send Reminder
