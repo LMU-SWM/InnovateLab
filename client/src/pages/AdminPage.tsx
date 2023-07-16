@@ -53,6 +53,8 @@ export default function AdminPage() {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [events, setEvents] = useState<EventData[]>([]);
   const [adminEvents, setAdminEvents] = useState<EventData[]>([]); // Update initial state to an empty array
+  const [events, setEvents] = useState<EventData[]>([]);
+  const [adminEvents, setAdminEvents] = useState<EventData[]>([]); // Update initial state to an empty array
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>("");
   const [pendingEvents, setPendingEvents] = useState<EventData[]>([]);
@@ -269,8 +271,10 @@ export default function AdminPage() {
           >
             <RoomSection rooms={rooms} />
             <PublicEventsSection events={adminEvents} />
+            <PublicEventsSection events={adminEvents} />
 
             <ManageBookingsSection
+              rooms={rooms}
               rooms={rooms}
               pendingEvents={pendingEvents}
               completedEvents={completedEvents}
