@@ -206,7 +206,8 @@ export default function AdminPage() {
   const [showEditPopup, setShowEditPopup] = useState(false);
   const [showAddPopup, setShowAddPopup] = useState(false);
   const [rooms, setRooms] = useState<Room[]>([]);
-  const [events, setEvents] = useState<EventData[]>([]); // Update initial state to an empty array
+  const [events, setEvents] = useState<EventData[]>([]);
+  const [adminEvents, setAdminEvents] = useState<EventData[]>([]); // Update initial state to an empty array
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>("");
   const [pendingEvents, setPendingEvents] = useState<EventData[]>([]);
@@ -252,6 +253,26 @@ export default function AdminPage() {
         const data = await response.json();
         //console.log(data);
         setEvents(data);
+      } catch (error: any) {
+        setError(error.message);
+      }
+    };
+
+    if (isAuthenticated) {
+      fetchEvents();
+    }
+  }, [isAuthenticated]);
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const response = await fetch("http://localhost:3001/events?owner=ADMIN");
+        if (!response.ok) {
+          throw new Error("Failed to fetch events");
+        }
+        const data = await response.json();
+        //console.log(data);
+        setAdminEvents(data);
       } catch (error: any) {
         setError(error.message);
       }
@@ -386,9 +407,10 @@ export default function AdminPage() {
             }}
           >
             <RoomSection rooms={rooms} />
-            <PublicEventsSection events={events} />
+            <PublicEventsSection events={adminEvents} />
 
             <ManageBookingsSection
+              rooms={rooms}
               pendingEvents={pendingEvents}
               completedEvents={completedEvents}
               onSetOfflineTime={handleSetOfflineTime}

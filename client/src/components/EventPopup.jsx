@@ -280,42 +280,7 @@ function EventPopup({
         console.error("Error:", error);
       });
   };
-
-  // const onAssistantBook = (index) => {
-  //   // Use the index here as needed
-  //   fetch(
-  //     `http://localhost:3001/calendars/id?summary=Room%201`
-  //   )
-  //     .then((calendarResponse) => {
-  //       if (!calendarResponse.ok) {
-  //         throw new Error('Network response was not ok');
-  //       }
-  //       console.log("Call: ",calendarResponse.json());
-  //       return calendarResponse.json();
-  //     })
-  //     .then((calendarData) => {
-  //       if (!calendarData.id || !availableTimeSlots[index]) {
-  //         throw new Error('Invalid data received');
-  //       }
-  //       eventData.location = calendarData.id;
-  //       console.log("Call: ",calendarData.id);
-  //       console.log("Call Eve: ",eventData.location);
-  //       console.log("Aval:", availableTimeSlots[index]);
-  //       eventData.title = eventData.title + "[A]";
-  //       eventData.end = availableTimeSlots[index].end;
-  //       eventData.start = availableTimeSlots[index].start;
-  //     })
-  //     .then(() => {
-  //       if (!eventData) {
-  //         throw new Error('Event data is not defined');
-  //       }
-  //       //onChange({ ...eventData });
-  //     })
-  //     .catch((error) => {
-  //       console.error('Error:', error);
-  //     });
-  // };
-
+  
   const onAssistantBook = async (index) => {
     try {
       const calendarResponse = await fetch(
