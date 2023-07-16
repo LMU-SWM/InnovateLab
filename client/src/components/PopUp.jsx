@@ -62,29 +62,14 @@ class CreateMeetingPopup extends Component {
     const { title, location, startTime, endTime } = this.state;
     const { eventId, calendarId } = this.props;
   
-    const { eventId, calendarId } = this.props;
-  
     const eventData = {
       user: localStorage.getItem("USER_IL"),
-      calendarId: calendarId,
       summary: title,
       location: location,
-      startDateTime: startTime.dateTime,
-      endDateTime: endTime.dateTime,
+      startDateTime: startTime,
+      endDateTime: endTime,
     };
-    
-    // "user": "sujaycjoshy@gmail.com",
-    // "calendarId": "r3ece775d7e9fldapkmao7tl4c@group.calendar.google.com",
-    // "owner": "sujaycjoshy@gmail.com",
-    // "team": "team_id",
-    // "summary": "Event summary Modified",
-    // "description": "Event description Modified",
-    // "location": "Event location Modified",
-    // "startDateTime": "2023-08-25T12:30:00.000Z",
-    // "endDateTime": "2023-08-25T15:30:00.000Z",
-    // "timeZone": "America/Los_Angeles",
-    // "attendees": ["attendee_id1", "attendee_id2"]
-
+  
     fetch(`http://localhost:3001/events/${eventId}`, {
       method: 'PUT',
       headers: {
@@ -100,14 +85,10 @@ class CreateMeetingPopup extends Component {
       })
       .catch((error) => {
         console.log('Error updating meeting:', error);
-        console.log('Error updating meeting:', error);
       });
-  
   
     this.props.onClose();
   };
-  
-
   
 
   handleSendEmail = () => {
@@ -166,9 +147,6 @@ class CreateMeetingPopup extends Component {
         <DialogActions>
           <Button onClick={this.props.onClose} color="primary">
             Cancel
-          </Button>
-          <Button onClick={this.handleSubmit} color="secondary">
-            Save
           </Button>
           <Button onClick={this.handleSubmit} color="secondary">
             Save
