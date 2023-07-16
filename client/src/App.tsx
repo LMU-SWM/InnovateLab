@@ -27,13 +27,13 @@ import logoImage from "./images/image.png";
 import "./App.css";
 
 const handleScroll = () => {
-  const appBar = document.getElementById('appBar');
+  const appBar = document.getElementById("appBar");
   if (appBar) {
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
     if (scrollTop > 0) {
-      appBar.style.backgroundColor = '#49be25';
+      appBar.style.backgroundColor = "#49be25";
     } else {
-      appBar.style.backgroundColor = '#2596be';
+      appBar.style.backgroundColor = "#2596be";
     }
   }
 };
@@ -58,9 +58,9 @@ function App() {
   };
 
   useEffect(() => {
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
     return () => {
-      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener("scroll", handleScroll);
     };
   }, []);
 
@@ -145,15 +145,15 @@ function App() {
                       </Typography>
                     </MenuItem>
                   )}
-                  {!isAuthenticated && (
-                    <MenuItem onClick={handleCloseNavMenu}>
-                      <Typography textAlign="center">
-                        <Button component={RouterLink} to="/signIn">
-                          Sign In
-                        </Button>
-                      </Typography>
-                    </MenuItem>
-                  )}
+
+                  <MenuItem onClick={handleCloseNavMenu}>
+                    <Typography textAlign="center">
+                      <Button component={RouterLink} to="/signIn">
+                        Sign In
+                      </Button>
+                    </Typography>
+                  </MenuItem>
+
                   <MenuItem onClick={handleCloseNavMenu}>
                     <Typography textAlign="center">
                       <Button onClick={navigateToIndexPage}>Home</Button>
@@ -205,6 +205,15 @@ function App() {
                 >
                   Home
                 </Button>
+                {!isAuthenticated && (
+                <Button
+                    component={RouterLink}
+                    to="/signIn"
+                    sx={{ my: 2, color: "white", display: "block" }}
+                  >
+                    Sign In
+                  </Button>
+                )}
                 {isAuthenticated && (
                   <Button
                     component={RouterLink}
