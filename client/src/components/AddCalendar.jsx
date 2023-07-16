@@ -297,7 +297,7 @@ export default function AddCalendar() {
       console.error("Error adding event:", error);
     }
   }
-
+    setSelectedCalendar("");
     setShowModal(false);
     setEventDataN({});
   };
