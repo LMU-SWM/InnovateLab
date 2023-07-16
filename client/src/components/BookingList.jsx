@@ -75,6 +75,7 @@ export default function BookingList() {
   };
 
   const handleUpdateMeeting = (updatedMeeting) => {
+    setForceFetch(!forceFetch);
     setItems((prevItems) =>
       prevItems.map((item) =>
         item.id === updatedMeeting.id ? updatedMeeting : item
