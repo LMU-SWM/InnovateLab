@@ -119,8 +119,8 @@ function EventPopup({
     }
   };
 
-  const handleCheckboxChange = (field) => (e) => {
-    onChange({ ...eventData, [field]: e.target.checked });
+  const handleCheckboxChange = () => (event) => {
+    onChange({ ...eventData, ["publicEvent"]: event.target.checked });
   };
 
   const checkAvailability = (field) => (e) => {
@@ -338,7 +338,7 @@ function EventPopup({
       // assuming onChange is a synchronous function
       // if it's not, you might want to use await onChange({ ...eventData });
       onChange({ ...eventData });
-      onSave();
+      onSave(true);
     } catch (error) {
       console.error('Error:', error);
     }
@@ -346,27 +346,24 @@ function EventPopup({
 
   const onManualBook = async (index) => {
     try {
-      const calendarResponse = await fetch(`http://localhost:3001/calendars/id?summary=${encodeURIComponent(availableTimeSlots[index].room)}`);
+      console.log(`http://localhost:3001/calendars/id?summary=${encodeURIComponent(eventData.location)}`);
+      const calendarResponse = await fetch(`http://localhost:3001/calendars/id?summary=${encodeURIComponent(eventData.location)}`);
       if (!calendarResponse.ok) {
         console.log("Response not okay");
         throw new Error('Network response was not ok');
       }
       const calendarData = await calendarResponse.json();
-      
-      if (!calendarData.id || !availableTimeSlots[index]) {
+      console.log("Calendar Data:",calendarData.id);
+      if (!calendarData.id) {
         throw new Error('Invalid data received');
       }
       
       eventData.calendar = calendarData.id;
-      eventData.title = eventData.title + "[A]";
-      eventData.end = availableTimeSlots[index].end;
-      eventData.start = availableTimeSlots[index].start;
-      eventData.location = availableTimeSlots[index].room;
-  
+      eventData.title = eventData.title + "[M]";
       // assuming onChange is a synchronous function
       // if it's not, you might want to use await onChange({ ...eventData });
       onChange({ ...eventData });
-      onSave();
+      onSave(false);
     } catch (error) {
       console.error('Error:', error);
     }
@@ -587,7 +584,7 @@ function EventPopup({
             control={
               <Checkbox
                 checked={eventData.publicEvent || false}
-                onChange={handleCheckboxChange("publicEvent")}
+                onChange={handleCheckboxChange()}
               />
             }
             label="Public"
@@ -639,7 +636,7 @@ function EventPopup({
           )}
 
           <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-            <Button variant="contained" onClick={onSave} sx={{ mr: 1 }}>
+            <Button variant="contained" onClick={onManualBook} sx={{ mr: 1 }}>
               Save Event
             </Button>
             <Button
@@ -648,14 +645,7 @@ function EventPopup({
               onClick={onDelete}
               sx={{ mr: 1 }}
             >
-              Delete
-            </Button>
-            <Button
-              variant="contained"
-              onClick={onCheckAvailability}
-              sx={{ mr: 1 }}
-            >
-              Check Availability
+              Cancel
             </Button>
           </Box>
           {/* Manual content ends here */}

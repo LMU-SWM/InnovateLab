@@ -7,7 +7,7 @@ const Header = () => (
   <header className="flex justify-between items-center py-4 px-6 bg-white shadow">
     <div className="flex items-center">
       <Link to="/">
-        <h1 className="text-xl font-semibold text-gray-700" style={{ color: '#707070' }}>YourLogo</h1>
+        <h1 className="text-xl font-semibold text-gray-700" style={{ color: '#707070' }}>Logo</h1>
       </Link>
     </div>
     <div className="flex items-center">

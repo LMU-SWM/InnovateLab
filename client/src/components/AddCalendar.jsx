@@ -90,6 +90,12 @@ export default function AddCalendar() {
     });
   };
 
+  const deleteAllDummyEvents = () => {
+    const calendarApi = calendarRef.current.getApi();
+    const dummyEvents = calendarApi.getEvents().filter((event) => event.extendedProps.isDummyEvent);
+    dummyEvents.forEach((event) => event.remove());
+  };
+
   const handleDateClick = (arg) => {
     if (calendarRef.current.getApi().view.type === "timeGridDay") {
       setSelectedDateTime(arg.date);
@@ -206,7 +212,9 @@ export default function AddCalendar() {
       });
   };
 
-  const handleSaveEvent = async () => {
+  const handleSaveEvent = async (assist) => {
+    if(assist)
+    {
     try {
       const newEvent = {
         owner: localStorage.getItem("USER_IL") || "",
@@ -245,35 +253,58 @@ export default function AddCalendar() {
     } catch (error) {
       console.error("Error adding event:", error);
     }
+  }
+  else
+  {
+    try {
+      const own = eventDataN.publicEvent ? "ADMIN" : localStorage.getItem("USER_IL") || "";
+
+      const newEvent = {
+        owner: own,
+        team: "dev",
+        calendarId: eventDataN.calendar,
+        summary: eventDataN.title,
+        description: eventDataN.description,
+        location: eventDataN.location,
+        startDateTime: eventDataN.start,
+        endDateTime: eventDataN.end,
+        timeZone: "UTC",
+        attendees: eventDataN.attendees,
+        useDefaultReminders: true,
+      };
+
+      // Your code to add the event to Google Calendar...
+      console.log(newEvent);
+      const response = await axios({
+        method: "post",
+        url: `http://localhost:3001/events/`,
+
+        headers: {
+          "Content-Type": "application/json",
+        },
+        data: newEvent,
+      });
+
+      if (response.status === 200) {
+        await sendEmail(response.data.event.htmlLink);        
+      } else {
+        console.error(
+          "Error adding event to Google Calendar:",
+          response.statusText
+        );
+      }
+    } catch (error) {
+      console.error("Error adding event:", error);
+    }
+  }
 
     setShowModal(false);
     setEventDataN({});
   };
 
   const handleDeleteEvent = async () => {
-    let eventId = eventDataN.id;
-    try {
-      console.log(eventId);
-      const response = await axios({
-        method: "delete",
-        url: `https://www.googleapis.com/calendar/v3/calendars/${selectedCalendar}/events/${eventId}`,
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
-      });
-
-      if (response.status === 204) {
-        console.log("Event deleted from Google Calendar");
-        calendarRef.current.getApi().refetchEvents();
-      } else {
-        console.error(
-          "Error deleting event from Google Calendar:",
-          response.statusText
-        );
-      }
-    } catch (error) {
-      console.error("Error deleting event:", error);
-    }
+    setShowModal(false);
+    deleteAllDummyEvents();
   };
 
   const handleCancelEvent = () => {

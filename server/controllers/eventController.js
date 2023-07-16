@@ -38,12 +38,12 @@ module.exports = (db) => {
       };
 
       // Check if the timeslot is available
-      const eventsResponse = await calendar.events.list({
-        calendarId: calendarId,
-        timeMin: event.start.dateTime,
-        timeMax: event.end.dateTime,
-        singleEvents: true,
-      });
+      // const eventsResponse = await calendar.events.list({
+      //   calendarId: calendarId,
+      //   timeMin: event.start.dateTime,
+      //   timeMax: event.end.dateTime,
+      //   singleEvents: true,
+      // });
 
       // const existingEvents = eventsResponse.data.items;
       // if (existingEvents && existingEvents.length > 0) {

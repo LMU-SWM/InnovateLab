@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect } from "react";
 import {
   BrowserRouter,
   Link as RouterLink,
@@ -23,7 +23,7 @@ import ManageBookingPage from "./pages/ManageBookingPage";
 import AdminPage from "./pages/AdminPage";
 import PublicEventsPage from "./pages/PublicEventsPage";
 import Layout from "./layouts/BaseLayout";
-import Logo from "./images/logo.svg";
+import logoImage from "./images/image.png";
 import "./App.css";
 
 function App() {
@@ -41,21 +41,20 @@ function App() {
     setAnchorElNav(null);
   };
 
-
   return (
     <Container maxWidth="xl" sx={{ p: "0px !important" }}>
       <BrowserRouter basename="/react-auth0">
         <AppBar position="static">
           <Container maxWidth="xl">
             <Toolbar disableGutters>
-              <Typography
-                variant="h6"
-                noWrap
-                component="div"
-                sx={{ mr: 2, display: { xs: "none", md: "flex" } }}
-              >
-                Logo
-              </Typography>
+              <img
+                src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/SWM.svg/500px-SWM.svg.png"
+                alt="Logo"
+                style={{
+                  marginRight: "2px",
+                  display: "none", // Change to 'flex' for md breakpoint
+                }}
+              />
               <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
                 <IconButton
                   size="large"
@@ -133,6 +132,15 @@ function App() {
                   {isAuthenticated && (
                     <MenuItem onClick={handleCloseNavMenu}>
                       <Typography textAlign="center">
+                        <Button component={RouterLink} to="/home">
+                          Home
+                        </Button>
+                      </Typography>
+                    </MenuItem>
+                  )}
+                  {isAuthenticated && (
+                    <MenuItem onClick={handleCloseNavMenu}>
+                      <Typography textAlign="center">
                         <Button component={RouterLink} to="/profile">
                           Profile
                         </Button>
@@ -155,14 +163,14 @@ function App() {
                   )}
                 </Menu>
               </Box>
-              <Typography
-                variant="h6"
-                noWrap
-                component="div"
-                sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}
-              >
-                Logo here
-              </Typography>
+              <img
+                src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/SWM.svg/500px-SWM.svg.png"
+                alt="Logo"
+                style={{
+                  marginRight: "2px",
+                  display: "none", // Change to 'flex' for md breakpoint
+                }}
+              />
               <Box
                 sx={{
                   flexGrow: 1,
@@ -170,8 +178,15 @@ function App() {
                   justifyContent: "flex-end",
                 }}
               >
-                {!isAuthenticated && (
-                  <SignIn />
+                {!isAuthenticated && <SignIn />}
+                {isAuthenticated && (
+                  <Button
+                    component={RouterLink}
+                    to="/home"
+                    sx={{ my: 2, color: "white", display: "block" }}
+                  >
+                    Home
+                  </Button>
                 )}
                 {isAuthenticated && (
                   <Button
@@ -218,13 +233,13 @@ function App() {
         </AppBar>
         <Routes>
           <Route path="/" element={<Layout />}>
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/signIn" element={<SignIn />} />
-          <Route path="/new-booking" element={<NewBookingPage />} />
-          <Route path="/manage-booking" element={<ManageBookingPage />} />
-          <Route path="/adminPage" element={<AdminPage />} />
-          <Route path="/publicEventsPage" element={<PublicEventsPage />} />
-          <Route path="*" element={<SignIn />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/signIn" element={<SignIn />} />
+            <Route path="/new-booking" element={<NewBookingPage />} />
+            <Route path="/manage-booking" element={<ManageBookingPage />} />
+            <Route path="/adminPage" element={<AdminPage />} />
+            <Route path="/publicEventsPage" element={<PublicEventsPage />} />
+            <Route path="*" element={<SignIn />} />
           </Route>
         </Routes>
       </BrowserRouter>
@@ -233,4 +248,3 @@ function App() {
 }
 
 export default App;
-

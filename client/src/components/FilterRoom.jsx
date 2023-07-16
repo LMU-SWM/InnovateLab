@@ -9,10 +9,27 @@ import IconButton from '@mui/material/IconButton';
 import CommentIcon from '@mui/icons-material/Comment';
 import Typography from '@mui/material/Typography';
 
-export default function FilterRoom() {
+export default function FilterRoom({ onRoomToggle }) {
     const [checked, setChecked] = React.useState([0]);
+    const [rooms, setRooms] = React.useState([]);
 
-    const handleToggle = (value) => () => {
+    React.useEffect(() => {
+        fetch('http://localhost:3001/rooms/')
+        .then(response => response.json())
+        .then(data => {
+            const rooms = data.map(item => ({
+                id: item._id,
+                name: item.name,
+            }));
+            setRooms(rooms);
+            setChecked(rooms.map(room => room.name));
+            rooms.forEach((room) => {
+                onRoomToggle(room.name);
+            });
+        });
+    }, []);
+
+    const handleRoomToggle = (value) => () => {
         const currentIndex = checked.indexOf(value);
         const newChecked = [...checked];
 
@@ -23,18 +40,8 @@ export default function FilterRoom() {
         }
 
         setChecked(newChecked);
+        onRoomToggle(value);
     };
-
-    const rooms = [
-        {
-            id: 1,
-            mame:'Creative room',
-        },
-        {
-            id: 2,
-            mame:'Technology room',
-        },
-        ];
 
     return (
         <div style={{ border: '0.5px solid black', padding: '10px', width: '20vw' }}>
@@ -47,20 +54,20 @@ export default function FilterRoom() {
 
                     return (
                         <ListItem
-                            key={value}
+                            key={value.id}
                             disablePadding
                         >
-                            <ListItemButton role={undefined} onClick={handleToggle(value.id)} dense>
+                            <ListItemButton role={undefined} onClick={handleRoomToggle(value.name)} dense>
                                 <ListItemIcon>
                                     <Checkbox
                                         edge="start"
-                                        checked={checked.indexOf(value.id) !== -1}
+                                        checked={checked.indexOf(value.name) !== -1}
                                         tabIndex={-1}
                                         disableRipple
                                         inputProps={{ 'aria-labelledby': labelId }}
                                     />
                                 </ListItemIcon>
-                                <ListItemText id={labelId} primary={value.mame} />
+                                <ListItemText id={labelId} primary={value.name} />
                             </ListItemButton>
                         </ListItem>
                     );

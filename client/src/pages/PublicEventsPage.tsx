@@ -1,6 +1,14 @@
 import { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
-import AddCalendar from "../components/AddCalendar";
+import {
+  Card,
+  CardContent,
+  CardMedia,
+  Typography,
+  Button,
+  Grid,
+  Box,
+} from "@mui/material";
 
 interface Event {
   _id: string;
@@ -47,18 +55,76 @@ export default function PublicEventsPage() {
 
   return (
     <main style={{ padding: "1rem 0" }}>
+      <Box
+        style={{
+          padding: "4rem",
+          textAlign: "center",
+        }}
+      >
+        <Typography variant="h4" component="h1">
+          Events happening at SWM
+        </Typography>
+        <Typography variant="subtitle1" component="p">
+          Join us!
+        </Typography>
+      </Box>
       {isAuthenticated && (
-      <div style={{ display: "flex", flexWrap: "wrap" }}>
-        {events.map((event) => (
-          <div key={event.eventId} style={{ width: "300px", margin: "1rem" }}>
-            <img src={event.image} alt="" style={{ width: "100%", height: "auto" }} />
-            <h3>{event.summary}</h3>
-            <p>{event.description}</p>
-            <p>{event.location}</p>
-            <button onClick={() => handleRegistration(event.eventId)}>Register</button>
-          </div>
-        ))}
-      </div>
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            justifyContent: "flex-start",
+            backgroundImage: "url(https://cdn.casafari.com/wp-content/uploads/2022/05/Munich-as-seen-from-above-scaled.jpg)",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            marginTop: "-50px", // Adjust this value as needed
+            paddingTop: "50px", // Adjust this value as needed
+            position: "relative",
+            zIndex: 1,
+          }}
+        >
+          {events.map((event) => (
+            <Card
+              key={event.eventId}
+              style={{ width: "300px", margin: "1rem" }}
+            >
+              {event.image ? (
+                <CardMedia
+                  component="img"
+                  height="200"
+                  image={event.image}
+                  alt=""
+                />
+              ) : (
+                <Box
+                  height={200}
+                  bgcolor="lightgrey"
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                >
+                  <Typography variant="body1" color="textSecondary">
+                    Image Placeholder
+                  </Typography>
+                </Box>
+              )}
+              <CardContent>
+                <Typography variant="h6" component="h3">
+                  {event.summary}
+                </Typography>
+                <Typography variant="body2" color="textSecondary">
+                  {event.description}
+                </Typography>
+                <Button
+                  variant="contained"
+                  onClick={() => handleRegistration(event.eventId)}
+                >
+                  Register
+                </Button>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       )}
     </main>
   );
