@@ -5,7 +5,7 @@ import Footer from "../components/Footer";
 
 export default function Layout() {
   return (
-    <div>
+    <div style={{ marginTop: '64px' }}>
       <Outlet />
       <Footer />
     </div>
