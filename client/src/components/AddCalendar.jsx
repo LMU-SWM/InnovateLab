@@ -231,7 +231,7 @@ export default function AddCalendar() {
       };
 
       // Your code to add the event to Google Calendar...
-      console.log(newEvent);
+      console.log("NE:",newEvent);
       const response = await axios({
         method: "post",
         url: `http://localhost:3001/events/`,
