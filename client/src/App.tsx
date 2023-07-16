@@ -41,6 +41,10 @@ function App() {
     setAnchorElNav(null);
   };
 
+  const navigateToIndexPage = () => {
+    window.location.href = "/static/InfoPage/index.html";
+  };
+
   return (
     <Container maxWidth="xl" sx={{ p: "0px !important" }}>
       <BrowserRouter basename="/react-auth0">
@@ -48,11 +52,13 @@ function App() {
           <Container maxWidth="xl">
             <Toolbar disableGutters>
               <img
-                src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/SWM.svg/500px-SWM.svg.png"
+                src="http://localhost:3000/InnovateLab/images/image.png"
                 alt="Logo"
                 style={{
                   marginRight: "2px",
-                  display: "none", // Change to 'flex' for md breakpoint
+                  display: "flex",
+                  height: "50px", // Set the desired height
+                  width: "auto", // Let the width adjust automatically
                 }}
               />
               <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
@@ -129,15 +135,11 @@ function App() {
                       </Typography>
                     </MenuItem>
                   )}
-                  {isAuthenticated && (
-                    <MenuItem onClick={handleCloseNavMenu}>
-                      <Typography textAlign="center">
-                        <Button component={RouterLink} to="/home">
-                          Home
-                        </Button>
-                      </Typography>
-                    </MenuItem>
-                  )}
+                  <MenuItem onClick={handleCloseNavMenu}>
+                    <Typography textAlign="center">
+                      <Button onClick={navigateToIndexPage}>Home</Button>
+                    </Typography>
+                  </MenuItem>
                   {isAuthenticated && (
                     <MenuItem onClick={handleCloseNavMenu}>
                       <Typography textAlign="center">
@@ -164,7 +166,7 @@ function App() {
                 </Menu>
               </Box>
               <img
-                src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/SWM.svg/500px-SWM.svg.png"
+                src="http://localhost:3000/InnovateLab/images/image.png"
                 alt="Logo"
                 style={{
                   marginRight: "2px",
@@ -178,16 +180,12 @@ function App() {
                   justifyContent: "flex-end",
                 }}
               >
-                {!isAuthenticated && <SignIn />}
-                {isAuthenticated && (
-                  <Button
-                    component={RouterLink}
-                    to="/home"
-                    sx={{ my: 2, color: "white", display: "block" }}
-                  >
-                    Home
-                  </Button>
-                )}
+                <Button
+                  onClick={navigateToIndexPage}
+                  sx={{ my: 2, color: "white", display: "block" }}
+                >
+                  Home
+                </Button>
                 {isAuthenticated && (
                   <Button
                     component={RouterLink}
