@@ -282,7 +282,7 @@ function EventPopup({
   };
 
   // const onAssistantBook = (index) => {
-  //   // Use the index here as needed  
+  //   // Use the index here as needed
   //   fetch(
   //     `http://localhost:3001/calendars/id?summary=Room%201`
   //   )
@@ -318,57 +318,71 @@ function EventPopup({
 
   const onAssistantBook = async (index) => {
     try {
-      const calendarResponse = await fetch(`http://localhost:3001/calendars/id?summary=${encodeURIComponent(availableTimeSlots[index].room)}`);
+      const calendarResponse = await fetch(
+        `http://localhost:3001/calendars/id?summary=${encodeURIComponent(
+          availableTimeSlots[index].room
+        )}`
+      );
       if (!calendarResponse.ok) {
         console.log("Response not okay");
-        throw new Error('Network response was not ok');
+        throw new Error("Network response was not ok");
       }
       const calendarData = await calendarResponse.json();
-      
+
       if (!calendarData.id || !availableTimeSlots[index]) {
-        throw new Error('Invalid data received');
+        throw new Error("Invalid data received");
       }
-      
+
       eventData.calendar = calendarData.id;
       eventData.title = eventData.title + "[A]";
       eventData.end = availableTimeSlots[index].end;
       eventData.start = availableTimeSlots[index].start;
       eventData.location = availableTimeSlots[index].room;
-  
+
       // assuming onChange is a synchronous function
       // if it's not, you might want to use await onChange({ ...eventData });
       onChange({ ...eventData });
       onSave(true);
     } catch (error) {
-      console.error('Error:', error);
+      console.error("Error:", error);
     }
   };
 
   const onManualBook = async (index) => {
     try {
-      console.log(`http://localhost:3001/calendars/id?summary=${encodeURIComponent(eventData.location)}`);
-      const calendarResponse = await fetch(`http://localhost:3001/calendars/id?summary=${encodeURIComponent(eventData.location)}`);
+      console.log(
+        `http://localhost:3001/calendars/id?summary=${encodeURIComponent(
+          eventData.location
+        )}`
+      );
+      const calendarResponse = await fetch(
+        `http://localhost:3001/calendars/id?summary=${encodeURIComponent(
+          eventData.location
+        )}`
+      );
       if (!calendarResponse.ok) {
         console.log("Response not okay");
-        throw new Error('Network response was not ok');
+        throw new Error("Network response was not ok");
       }
       const calendarData = await calendarResponse.json();
-      console.log("Calendar Data:",calendarData.id);
+      console.log("Calendar Data:", calendarData.id);
       if (!calendarData.id) {
-        throw new Error('Invalid data received');
+        throw new Error("Invalid data received");
       }
-      
+
       eventData.calendar = calendarData.id;
       eventData.title = eventData.title + "[M]";
+      eventData.start = `${eventData.start}:00.000Z`;
+      eventData.end = `${eventData.end}:00.000Z`;
       // assuming onChange is a synchronous function
       // if it's not, you might want to use await onChange({ ...eventData });
       onChange({ ...eventData });
       onSave(false);
     } catch (error) {
-      console.error('Error:', error);
+      console.error("Error:", error);
     }
   };
-  
+
   return (
     <Modal open={isOpen} onClose={onCancel}>
       <Box
@@ -561,7 +575,7 @@ function EventPopup({
             type="datetime-local"
             fullWidth
             value={eventData.start || ""}
-            onChange={handleChange("startDateTime")}
+            onChange={handleChange("start")}
             sx={{ mb: 2 }}
             InputLabelProps={{
               shrink: true,
@@ -573,7 +587,7 @@ function EventPopup({
             type="datetime-local"
             fullWidth
             value={eventData.end || ""}
-            onChange={handleChange("endDateTime")}
+            onChange={handleChange("end")}
             sx={{ mb: 2 }}
             InputLabelProps={{
               shrink: true,

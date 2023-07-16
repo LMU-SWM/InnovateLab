@@ -26,6 +26,18 @@ import Layout from "./layouts/BaseLayout";
 import logoImage from "./images/image.png";
 import "./App.css";
 
+const handleScroll = () => {
+  const appBar = document.getElementById('appBar');
+  if (appBar) {
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    if (scrollTop > 0) {
+      appBar.style.backgroundColor = '#49be25';
+    } else {
+      appBar.style.backgroundColor = '#2596be';
+    }
+  }
+};
+
 function App() {
   const { isAuthenticated, logout } = useAuth0();
 
@@ -42,13 +54,20 @@ function App() {
   };
 
   const navigateToIndexPage = () => {
-    window.location.href = "/static/InfoPage/index.html";
+    window.location.href = "http://localhost:3000/InnovateLab/home/index.html";
   };
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
   return (
     <Container maxWidth="xl" sx={{ p: "0px !important" }}>
       <BrowserRouter basename="/react-auth0">
-        <AppBar position="static">
+        <AppBar position="fixed" id="appBar">
           <Container maxWidth="xl">
             <Toolbar disableGutters>
               <img
