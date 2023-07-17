@@ -53,11 +53,10 @@ module.exports = (db) => {
       // }
 
       const response = await calendar.events.insert({
-          calendarId: calendarId, // Use the provided calendarId
-          resource: event,
-          sendUpdates: "none",
+        calendarId: calendarId, // Use the provided calendarId
+        resource: event,
+        sendUpdates: "none",
       });
- 
 
       // Save the event to MongoDB
       const newEvent = new EventModel({
@@ -123,27 +122,29 @@ module.exports = (db) => {
   const deleteFromPublic = async (req, res) => {
     try {
       const eventId = req.params.eventId; // Extract the eventId from the request parameters
-  
+
       // Delete the event from the "PublicEvents" collection based on the eventId
       const publicEventCollection = db.collection("PublicEvents");
       const result = await publicEventCollection.deleteOne({ eventId });
-  
+
       if (result.deletedCount === 0) {
         return res.status(404).json({ error: "Event not found" });
       }
-  
+
       res.json({ message: "Event deleted from PublicEvents collection" });
     } catch (error) {
       console.error("Error deleting event from PublicEvents:", error);
-      res.status(500).json({ error: "Failed to delete event from PublicEvents" });
+      res
+        .status(500)
+        .json({ error: "Failed to delete event from PublicEvents" });
     }
   };
-  
+
   const getFromPublic = async (req, res) => {
     try {
       // Find the event from the "PublicEvents" collection based on the eventId
       const publicEventCollection = db.collection("PublicEvents");
-      const events = await eventCollection.toArray()
+      const events = await eventCollection.toArray();
       res.json(events);
     } catch (error) {
       console.error("Error getting event from PublicEvents:", error);
@@ -173,9 +174,6 @@ module.exports = (db) => {
     try {
       const { owner, eventId } = req.query; // Extract owner and eventId from query parameters
 
-      // Define the query. If an owner is provided, filter events by owner.
-      // If an eventId is provided, filter events by eventId.
-      // If neither owner nor eventId is provided, the query will be an empty object and fetch all events.
       const query = {};
       if (owner) query.owner = owner;
       if (eventId) query.eventId = eventId;
@@ -355,6 +353,103 @@ module.exports = (db) => {
     }
   };
 
+  const getEventsFunction = async (start, end) => {
+    try {
+      // Convert start and end strings to ISO 8601 date strings
+      const startDateString = new Date(start).toISOString();
+      const endDateString = new Date(end).toISOString();
+    
+      const eventCollection = db.collection("events");
+      
+      const pipeline = [
+        {
+          $addFields: {
+            startDateTimeDate: {
+              $dateFromString: {
+                dateString: "$startDateTime"
+              }
+            }
+          }
+        },
+        {
+          $match: {
+            startDateTimeDate: {
+              $gte: new Date(startDateString),
+              $lte: new Date(endDateString)
+            }
+          }
+        },
+        {
+          $project: {
+            startDateTimeDate: 0 // remove this field if you don't want it in your results
+          }
+        }
+      ];
+      
+      const events = await eventCollection.aggregate(pipeline).toArray();
+    
+      return events;
+    } 
+    catch (error) {
+      console.error("Error getting events:", error);
+      return [];
+    }
+  };
+  
+  const deleteEventFunction = async (eventId) => {
+    try {
+      // Retrieve the event from the MongoDB database
+      const eventCollection = db.collection("events");
+      const dbEvent = await eventCollection.findOne({ eventId });
+
+      if (!dbEvent) {
+        throw new Error("Event not found");
+      }
+
+      // Delete the event from Google Calendar
+      const auth = await google.auth.getClient({
+        keyFile: "./auth.json",
+        scopes: ["https://www.googleapis.com/auth/calendar.events"],
+      });
+      const calendar = google.calendar({ version: "v3", auth });
+      await calendar.events.delete({
+        calendarId: dbEvent.calendarId,
+        eventId: dbEvent.googleCalendarEventId,
+      });
+
+      // Delete the event from MongoDB
+      await eventCollection.deleteOne({ eventId });
+
+      console.log("Event deleted successfully");
+    } catch (error) {
+      console.error("Error deleting event:", error);
+      throw new Error("Failed to delete event");
+    }
+  };
+
+  const deleteRangeEvent = async (req, res) => {
+    try {
+      const start = req.body.start;
+      const end = req.body.end;
+
+      const eventsList = await getEventsFunction(start, end);
+      console.log("Events to delete:", eventsList);
+      eventsList.forEach((event) => {
+        deleteEventFunction(event.eventId)
+          .then(() => {
+            console.log(`Event ${event.eventId} deleted successfully`);
+          })
+          .catch((error) => {
+            res.status(500).json({ error: "Failed to delete event" });
+          });
+      });
+      res.json({ message: "Events deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting event:", error);
+      res.status(500).json({ error: "Failed to delete event" });
+    }
+  };
+
   // timeslotController.js
   const getAvailableTimeSlots = function (
     personalEvents,
@@ -368,18 +463,21 @@ module.exports = (db) => {
     let safetyCounter = 0;
 
     function parseDateAsUTC(dateString) {
-      const [date, time] = dateString.split('T');
-      const [year, month, day] = date.split('-').map(Number);
-      const [hour, minute, second] = (time.replace('.000Z', '')).split(':').map(Number);
-      
+      const [date, time] = dateString.split("T");
+      const [year, month, day] = date.split("-").map(Number);
+      const [hour, minute, second] = time
+        .replace(".000Z", "")
+        .split(":")
+        .map(Number);
+
       return new Date(Date.UTC(year, month - 1, day, hour, minute, second));
-  }
+    }
 
     const getNonConflictingSlots = (slots, events) => {
       if (!Array.isArray(slots) || !Array.isArray(events)) {
         throw new Error("Both slots and events must be arrays");
       }
-    
+
       const conflicts = [];
       //console.log("events:", events)
       slots.forEach((slot) => {
@@ -396,21 +494,21 @@ module.exports = (db) => {
           }
         });
       });
-    
+
       const nonConflictingSlots = slots.filter(
         (slot) => !conflicts.some((conflict) => areSlotsEqual(slot, conflict))
       );
-    
+
       return nonConflictingSlots;
     };
-    
+
     const getEquallyDividedSlots = (duration, startTime, endTime, room) => {
       if (!Number.isInteger(duration)) {
         throw new Error("Duration must be an integer");
       }
       const slots = [];
       const currentTime = new Date(startTime);
-      
+
       while (currentTime < endTime) {
         //console.log("Current Time:", currentTime)
         //console.log("endTime:", endTime)
@@ -424,57 +522,72 @@ module.exports = (db) => {
             room: room,
           });
         }
-    
+
         currentTime.setTime(slotStart.getTime() + 30 * 60 * 1000);
       }
-    
+
       return slots;
     };
-    
-    const getPossibleSlots = (events, startTime, endTime, duration, possibleRooms) => {
+
+    const getPossibleSlots = (
+      events,
+      startTime,
+      endTime,
+      duration,
+      possibleRooms
+    ) => {
       if (!Array.isArray(possibleRooms)) {
         throw new Error("possibleRooms must be an array");
       }
-    
+
       let potentialEvents = [];
-      
+
       const eventsByRoom = groupEventsByRoom(events);
-    
+
       for (let room of possibleRooms) {
-        let allPossibleSlots = getEquallyDividedSlots(duration, startTime, endTime, room);
+        let allPossibleSlots = getEquallyDividedSlots(
+          duration,
+          startTime,
+          endTime,
+          room
+        );
         //console.log("allPossibleSlots:", allPossibleSlots);
         let roomEvents = eventsByRoom[room] || [];
         //console.log("roomEvents:", eventsByRoom);
-        const nonConflictingSlots = getNonConflictingSlots(allPossibleSlots, roomEvents);
+        const nonConflictingSlots = getNonConflictingSlots(
+          allPossibleSlots,
+          roomEvents
+        );
         potentialEvents.push(...nonConflictingSlots);
       }
       return potentialEvents;
     };
-    
+
     const groupEventsByRoom = (events) => {
       if (!Array.isArray(events)) {
         throw new Error("events must be an array");
       }
-    
+
       return events.reduce((groupedEvents, event) => {
-        (groupedEvents[event.room] = groupedEvents[event.room] || []).push(event);
+        (groupedEvents[event.room] = groupedEvents[event.room] || []).push(
+          event
+        );
         return groupedEvents;
       }, {});
     };
-    
+
     // Helper function to check if two time slots are equal
     function areSlotsEqual(slot1, slot2) {
-      if (typeof slot1 !== 'object' || typeof slot2 !== 'object') {
+      if (typeof slot1 !== "object" || typeof slot2 !== "object") {
         throw new Error("Both slot1 and slot2 must be objects");
       }
-    
+
       return (
         slot1.start.getTime() === slot2.start.getTime() &&
         slot1.end.getTime() === slot2.end.getTime() &&
         slot1.room === slot2.room
       );
     }
-    
 
     // Main Function:
 
@@ -522,19 +635,20 @@ module.exports = (db) => {
     let availableTimeSlots = [];
     let currentDate = new Date(preferredDate);
 
-
-
     while (availableTimeSlots.length < 10) {
       let currentDayEvents = [];
       for (const roomName of possibleRooms) {
-          let events = Object.values(eventsByRoom[roomName]);
-          // Filter the events that are running during the current day for each room
-          for (const event of events) {
-            if (event.start.split("T")[0] === currentDate.toISOString().split("T")[0]) {
-              currentDayEvents.push(event);
-            }
+        let events = Object.values(eventsByRoom[roomName]);
+        // Filter the events that are running during the current day for each room
+        for (const event of events) {
+          if (
+            event.start.split("T")[0] ===
+            currentDate.toISOString().split("T")[0]
+          ) {
+            currentDayEvents.push(event);
           }
         }
+      }
       //console.log("currentDayEvents:", currentDayEvents);
       let potentialTimeSlots = getPossibleSlots(
         currentDayEvents,
@@ -544,11 +658,16 @@ module.exports = (db) => {
         possibleRooms
       );
       //console.log("potentialTimeSlots:", potentialTimeSlots);
-      const validEvents = personalEvents.filter(event => event.start && event.end);
-      let nonConflictingTimeSlots = getNonConflictingSlots(potentialTimeSlots, validEvents)
-      console.log(startTime, endTime)
+      const validEvents = personalEvents.filter(
+        (event) => event.start && event.end
+      );
+      let nonConflictingTimeSlots = getNonConflictingSlots(
+        potentialTimeSlots,
+        validEvents
+      );
+      console.log(startTime, endTime);
       availableTimeSlots.push(...nonConflictingTimeSlots);
-      console.log("availableTimeSlots:",availableTimeSlots);
+      console.log("availableTimeSlots:", availableTimeSlots);
 
       if (availableTimeSlots.length < 10) {
         if (currentDate.getDay() !== new Date(preferredDate).getDay()) {
@@ -612,5 +731,6 @@ module.exports = (db) => {
     moveToPublic,
     deleteFromPublic,
     getFromPublic,
+    deleteRangeEvent,
   };
 };

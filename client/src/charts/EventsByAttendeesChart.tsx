@@ -13,7 +13,7 @@ interface EventData {
   startDateTime: string;
   endDateTime: string;
   timeZone: string;
-  attendees: { email: string }[];
+  attendees: string[];
   googleCalendarEventId: string;
   calendarId: string;
 }
@@ -30,10 +30,10 @@ const EventsByAttendeesChart: React.FC<EventsByAttendeesChartProps> = ({
 
   events.forEach((event) => {
     event.attendees.forEach((attendee) => {
-      if (attendeesCount[attendee.email]) {
-        attendeesCount[attendee.email]++;
+      if (attendeesCount[attendee]) {
+        attendeesCount[attendee]++;
       } else {
-        attendeesCount[attendee.email] = 1;
+        attendeesCount[attendee] = 1;
       }
     });
   });

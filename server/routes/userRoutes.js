@@ -5,6 +5,7 @@ module.exports = (userController) => {
   //Users
   // Get all rooms
   router.get("/", userController.getAllUsers);
+  router.get("/:userId", userController.getUserRoles);
   //   //Get user by ID
   //   router.get("/:userId", usersController.getUserById);
   //   //Get user roles

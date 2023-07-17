@@ -47,7 +47,7 @@ interface Event {
   startDateTime: string;
   endDateTime: string;
   timeZone: string;
-  attendees: { email: string }[];
+  attendees: string[];
   googleCalendarEventId: string;
   calendarId: string;
 }
@@ -160,7 +160,11 @@ const ManageBookingsSection: React.FC<ManageBookingsSectionProps> = ({
           <TableCell>{event.location}</TableCell>
           <TableCell>{event.owner}</TableCell>
           <TableCell>{event.startDateTime}</TableCell>
-          <TableCell>{event.endDateTime}</TableCell>
+          <TableCell>
+            {event.attendees.map((attendee, index) => (
+                <div key={index}>{attendee}</div>
+            ))}
+          </TableCell>
         </TableRow>
       ));
     }
@@ -215,6 +219,8 @@ const ManageBookingsSection: React.FC<ManageBookingsSectionProps> = ({
                   <TableCell>Event Name</TableCell>
                   <TableCell>Date</TableCell>
                   <TableCell>Status</TableCell>
+                  <TableCell>Start Time</TableCell>
+                  <TableCell>Email</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>{renderEventRows(pendingEvents)}</TableBody>
