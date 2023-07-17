@@ -9,7 +9,8 @@ export default function ManageBookingPage() {
     <main style={{ padding: "1rem 0" }}>
       {isAuthenticated && (
         <div style={{ display: "flex", flexDirection: "column" }}>
-          <BookingList />
+          <BookingList
+          usr={user} />
         </div>
       )}
     </main>

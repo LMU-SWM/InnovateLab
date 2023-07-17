@@ -23,17 +23,49 @@ import axios from "axios";
 // const calendarId = process.env.REACT_APP_CALENDAR_ID;
 // const apiKey  = process.env.REACT_APP_API_KEY;
 
-export default function BookingList() {
+// const ManageBookingsSection: React.FC<ManageBookingsSectionProps> = ({
+//   rooms,
+//   pendingEvents,
+//   completedEvents,
+//   onSetOfflineTime,
+// }) => {
+  const BookingList= ({
+      usr
+    }) => {
   const [checked, setChecked] = useState([]);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [items, setItems] = useState([]);
   const [selectedMeeting, setSelectedMeeting] = useState(null);
-  const itemsPerPage = 9;
+  const itemsPerPage = 6;
   const [events, setEvents] = useState([]);
   const [selectedRooms, setSelectedRooms] = useState([]);
   const [selectedBookingTypes, setSelectedBookingTypes] = useState([]);
   const [forceFetch, setForceFetch] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  const fetchRoles = async ( userId ) => {
+    if (usr) {
+      console.log("userId:", userId);
+      const url = `http://localhost:3001/user/${encodeURIComponent(userId)}`;
+      const response = await axios.get(url);
+      const userRoles = response.data;
+      console.log(userRoles);
+
+      // Check if "Admin" role exists in the user roles array
+      const isAd = userRoles.includes("Admin");
+      console.log(`Is Admin: ${isAd}`);
+      setIsAdmin(isAd); // check if 'Admin' role is present
+    } else {
+      setIsAdmin(false);
+    }
+  };
+
+  //Security check
+  useEffect(() => { 
+    const userId = usr?.sub || "";
+    fetchRoles(userId);
+  }, [usr]);
 
   useEffect(() => {
     fetchBookingList().then((eventData) => {
@@ -51,7 +83,7 @@ export default function BookingList() {
 
     setItems(processedEvents);
     });
-  }, [forceFetch]);
+  }, [forceFetch,isAdmin]);
 
   useEffect(() => {
     // Trigger the effect on component mount
@@ -139,10 +171,14 @@ export default function BookingList() {
 
   const fetchBookingList = async () => {
     const owner = localStorage.getItem("USER_IL");
+    let queryurl = `http://localhost:3001/events?owner=${owner}`;
+    if(isAdmin){
+      queryurl = `http://localhost:3001/events`
+    }
     try {
       const response = await axios({
         method: "GET",
-        url: `http://localhost:3001/events?owner=sujaycjoshy@gmail.com`,
+        url: queryurl,
       });
       console.log(response.data);
       return response.data;
@@ -362,3 +398,5 @@ const sendEmail = async (id) => {
 
     );
 }
+
+export default BookingList;
