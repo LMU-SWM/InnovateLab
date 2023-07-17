@@ -156,7 +156,9 @@ export default function AdminPage() {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await fetch("http://localhost:3001/events?owner=ADMIN");
+        const response = await fetch(
+          "http://localhost:3001/events?owner=ADMIN"
+        );
         if (!response.ok) {
           throw new Error("Failed to fetch events");
         }

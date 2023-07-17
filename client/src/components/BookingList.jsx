@@ -37,7 +37,7 @@ import axios from "axios";
   const [page, setPage] = useState(1);
   const [items, setItems] = useState([]);
   const [selectedMeeting, setSelectedMeeting] = useState(null);
-  const itemsPerPage = 9;
+  const itemsPerPage = 6;
   const [events, setEvents] = useState([]);
   const [selectedRooms, setSelectedRooms] = useState([]);
   const [selectedBookingTypes, setSelectedBookingTypes] = useState([]);
