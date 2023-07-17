@@ -13,7 +13,7 @@ interface EventData {
   startDateTime: string;
   endDateTime: string;
   timeZone: string;
-  attendees: { email: string }[];
+  attendees: string[];
   googleCalendarEventId: string;
   calendarId: string;
 }
