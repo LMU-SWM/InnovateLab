@@ -62,8 +62,6 @@ class CreateMeetingPopup extends Component {
     const { title, location, startTime, endTime } = this.state;
     const { eventId, calendarId } = this.props;
   
-    const { eventId, calendarId } = this.props;
-  
     const eventData = {
       user: localStorage.getItem("USER_IL"),
       calendarId: calendarId,
@@ -100,14 +98,10 @@ class CreateMeetingPopup extends Component {
       })
       .catch((error) => {
         console.log('Error updating meeting:', error);
-        console.log('Error updating meeting:', error);
       });
-  
   
     this.props.onClose();
   };
-  
-
   
 
   handleSendEmail = () => {
@@ -166,9 +160,6 @@ class CreateMeetingPopup extends Component {
         <DialogActions>
           <Button onClick={this.props.onClose} color="primary">
             Cancel
-          </Button>
-          <Button onClick={this.handleSubmit} color="secondary">
-            Save
           </Button>
           <Button onClick={this.handleSubmit} color="secondary">
             Save
