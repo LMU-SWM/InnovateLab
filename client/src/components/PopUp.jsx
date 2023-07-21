@@ -67,11 +67,39 @@ class CreateMeetingPopup extends Component {
     const eventData = {
       user: localStorage.getItem("USER_IL"),
       calendarId: calendarId,
+      user: localStorage.getItem("USER_IL"),
+      calendarId: calendarId,
       summary: title,
       location: location,
       startDateTime: startTime.dateTime,
       endDateTime: endTime.dateTime,
+      startDateTime: startTime.dateTime,
+      endDateTime: endTime.dateTime,
     };
+    
+    // "user": "sujaycjoshy@gmail.com",
+    // "calendarId": "r3ece775d7e9fldapkmao7tl4c@group.calendar.google.com",
+    // "owner": "sujaycjoshy@gmail.com",
+    // "team": "team_id",
+    // "summary": "Event summary Modified",
+    // "description": "Event description Modified",
+    // "location": "Event location Modified",
+    // "startDateTime": "2023-08-25T12:30:00.000Z",
+    // "endDateTime": "2023-08-25T15:30:00.000Z",
+    // "timeZone": "America/Los_Angeles",
+    // "attendees": ["attendee_id1", "attendee_id2"]
+
+    fetch(`http://localhost:3001/events/${eventId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(eventData),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log('Meeting edited:', data);
+        this.props.onUpdate(data);
     
     // "user": "sujaycjoshy@gmail.com",
     // "calendarId": "r3ece775d7e9fldapkmao7tl4c@group.calendar.google.com",
