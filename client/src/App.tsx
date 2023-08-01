@@ -66,7 +66,7 @@ function App() {
 
   return (
     <Container maxWidth="xl" sx={{ p: "0px !important" }}>
-      <BrowserRouter basename="/react-auth0">
+      <BrowserRouter>
         <AppBar position="fixed" id="appBar">
           <Container maxWidth="xl">
             <Toolbar disableGutters>
@@ -173,7 +173,7 @@ function App() {
                       onClick={() => {
                         handleCloseNavMenu();
                         logout({
-                          returnTo: window.location.origin + "/react-auth0",
+                          returnTo: window.location.origin + "/",
                         });
                       }}
                     >
@@ -245,7 +245,7 @@ function App() {
                   <Button
                     onClick={() => {
                       logout({
-                        returnTo: window.location.origin + "/react-auth0",
+                        returnTo: window.location.origin + "/",
                       });
                     }}
                     sx={{ my: 2, color: "white", display: "block" }}
